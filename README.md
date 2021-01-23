@@ -21,7 +21,7 @@ A strong script plugin for Mindustry by kts
 > 2. ***sa \<help>*** # Manage scripts or modules
 >- ### **Permissions Node**
 
-```json
+```conf
 {
     "wayzer" : {
         "permission" : {
