@@ -71,23 +71,23 @@ onEnable {
     }
 }
 
-command("genCode", "管理指令: 为用户生成随机绑定码") {
+command("genCode", "Administration command: Generate random binding codes for users") {
     usage = "<qq>"
     permission = "wayzer.user.genCode"
     body {
-        val qq = arg.firstOrNull()?.toLongOrNull() ?: returnReply("[red]请输入正确的qq号".with())
-        reply("[green]绑定码{code},有效期:{expireTime}".with("code" to generate(qq), "expireTime" to expireTime))
+        val qq = arg.firstOrNull()?.toLongOrNull() ?: returnReply("[red]Please enter the correct qq number".with())
+        reply("[green]Binding code{code},expiration date:{expireTime}".with("code" to generate(qq), "expireTime" to expireTime))
     }
 }
 
-command("bind", "绑定用户") {
+command("bind", "Binding users") {
     usage = "<六位code>";this.type = CommandType.Client
     body {
         val qq = arg.firstOrNull()?.toIntOrNull()?.let(::check)
-            ?: returnReply("[red]请输入正确的6位绑定码,如没有，可找群内机器人获取".with())
+            ?: returnReply("[red]Please enter the correct 6-digit binding code, if not, you can find the robot in the group to get".with())
         PlayerData[player!!.uuid()].apply {
             if (profile != null)
-                returnReply("[red]你已经绑定用户，如需解绑，请联系管理员".with())
+                returnReply("[red]You have bound users, if you need to unbind, please contact the administrator".with())
             @Suppress("EXPERIMENTAL_API_USAGE")
             transaction {
                 profile = PlayerProfile.getOrCreate(qq, true).apply {
@@ -99,6 +99,6 @@ command("bind", "绑定用户") {
                 depends("wayzer/user/achievement")?.import<(PlayerProfile, String, Int, Boolean) -> Unit>("finishAchievement")
             finishAchievement?.invoke(profile!!, "绑定账号", 100, false)
         }
-        reply("[green]绑定账号[yellow]$qq[green]成功.".with())
+        reply("[green]Bind account[yellow]$qq[green] successfully.".with())
     }
 }

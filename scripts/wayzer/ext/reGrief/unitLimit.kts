@@ -4,8 +4,8 @@ import arc.util.Interval
 import mindustry.game.EventType
 import mindustry.gen.Groups
 
-val unitToWarn by config.key(190, "开始警告的单位数")
-val unitToKill by config.key(220, "单位数上限，禁止产生新的")
+val unitToWarn by config.key(200, "开始警告的单位数")
+val unitToKill by config.key(230, "单位数上限，禁止产生新的")
 
 val interval = Interval(1)
 listen<EventType.UnitCreateEvent> { e ->

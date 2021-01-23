@@ -15,7 +15,7 @@ import kotlin.system.exitProcess
 
 name = "自动更新"
 
-val enableUpdate by config.key(false, "是否开启自动更新")
+val enableUpdate by config.key(true, "是否开启自动更新")
 
 var updateCallback: (() -> Unit)? = null
 
@@ -43,7 +43,7 @@ onEnable {
 
 fun update(version: Int, url: String) {
     launch(Dispatchers.IO) {
-        Log.info("发现新版本可用 $version 正在从 $url 下载")
+        Log.info("Found a new version available $version being downloaded from $url")
         val con = URL(url).openConnection()
         val dest = File(BeControl::class.java.protectionDomain.codeSource.location.toURI().path)
         val tmp = dest.resolveSibling("server-be-$version.jar")
@@ -52,10 +52,10 @@ fun update(version: Int, url: String) {
                 input.copyTo(output)
             }
         }
-        Log.info("新版本 $version 下载完成: ${size / 1024 / 1024}MB")
+        Log.info("New version $version Download complete: ${size / 1024 / 1024}MB")
         updateCallback = {
             Groups.player.forEach {
-                it.kick("[yellow]服务器重启更新到新版本 $version")
+                it.kick("[yellow] Server reboot to update to new version $version")
             }
             Threads.sleep(32L)
             Log.info("&lcVersion downloaded, exiting. Note that if you are not using a auto-restart script, the server will not restart automatically.")
@@ -63,7 +63,7 @@ fun update(version: Int, url: String) {
             exitProcess(2)
         }
         Core.app.post {
-            broadcast("[yellow]服务器新版本{version}下载完成,将在本局游戏后自动重启更新".with("version" to version))
+            broadcast("[yellow] server new version {version} download completed, will automatically restart the update after this game".with("version" to version))
             if (Groups.player.isEmpty) {
                 Log.info("&lcSaving...")
                 @Suppress("SpellCheckingInspection")

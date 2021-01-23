@@ -25,7 +25,7 @@ var Player.lang
             }
         } ?: let {
             tempLang[uuid()] = v
-            sendMessage("[yellow]当前未绑定账号,语言设置将在退出游戏后重置".with())
+            sendMessage("[yellow] The language setting will be reset after you quit the game.".with())
         }
     }
 
@@ -59,9 +59,9 @@ class Lang(private val lang: String) : Properties() {
     companion object {
         val dir = Config.dataDirectory.resolve("lang")
         val header = """
-                |# Auto generated(自动生成的文件)
-                |# backup before modify(修改前注意备份)
-                |
+                |# Auto generated(automatically generated file)
+                |# backup before modify(Note backup before modify)
+                |# Auto generated
             """.trimMargin()
     }
 }
@@ -79,26 +79,26 @@ registerVar(TemplateHandlerKey, "多语言处理", TemplateHandler.new {
 
 //===commands===
 val commands = Commands()
-commands += CommandInfo(this, "reload", "重载语言文件") {
+commands += CommandInfo(this, "reload", "Reload language files") {
     permission = "wayzer.lang.reload"
     body {
         cache.clear()
-        reply("[green]缓存已刷新".with())
+        reply("[green]Cache is refreshed".with())
     }
 }
-commands += CommandInfo(this, "setDefault", "设置玩家默认语言") {
+commands += CommandInfo(this, "setDefault", "Set the player's default language") {
     permission = "wayzer.lang.setDefault"
     body {
         arg.getOrNull(0)?.let { default = it }
-        reply("[green]玩家默认语言已设为 {v}".with("v" to default))
+        reply("[green] Player default language has been set to {v}".with("v" to default))
     }
 }
-commands += CommandInfo(this, "set", "设置当前使用语言") {
+commands += CommandInfo(this, "set", "Set the currently used language") {
     permission = "wayzer.lang.setDefault"
     body {
         val suffix = if (player == null) ".console" else ".user"
         if (arg.isEmpty())
-            returnReply("[yellow]可用语言: {list}".with(
+            returnReply("[yellow] Available Languages: {list}".with(
                 "list" to Lang.dir.listFiles { it -> it.nameWithoutExtension.endsWith(suffix) }.orEmpty().map {
                     it.nameWithoutExtension.removeSuffix(suffix)
                 }
@@ -109,12 +109,12 @@ commands += CommandInfo(this, "set", "设置当前使用语言") {
                 returnReply("[green]控制台语言已设为 {v}".with("v" to console))
             } else {
                 player!!.lang = arg[0]
-                returnReply("[green]你的语言已设为 {v}".with("v" to player!!.lang))
+                returnReply("[green] Your language is set to {v}".with("v" to player!!.lang))
             }
         }
     }
 }
-command("lang", "设置语言") {
+command("lang", "Set language") {
     body(commands)
     onComplete(commands)
 }

@@ -9,14 +9,14 @@ import mindustry.world.blocks.storage.CoreBlock
 import java.time.Duration
 import kotlin.math.ceil
 
-val time by config.key(600, "pvp保护时间(单位秒,小于等于0关闭)")
+val time by config.key(900, "pvp保护时间(单位秒,小于等于0关闭)")
 
 listen<EventType.WorldLoadEvent> {
     launch(Dispatchers.game) {
         delay(3_000)
         var leftTime = state.rules.tags.getInt("@pvpProtect", time)
         if (state.rules.mode() != Gamemode.pvp || time <= 0) return@launch
-        broadcast("[yellow]PVP保护时间,禁止在其他基地攻击(持续{time:分钟})".with("time" to Duration.ofSeconds(leftTime.toLong())), quite = true)
+        broadcast("[yellow] PVP protection time, forbidden to attack in other bases (duration {time:minutes})".with("time" to Duration.ofSeconds(leftTime.toLong())), quite = true)
         suspend fun checkAttack(time: Int) = repeat(time) {
             delay(1000)
             Groups.unit.forEach {
@@ -25,7 +25,7 @@ listen<EventType.WorldLoadEvent> {
                             .filterNot { t -> t.team == it.team }.flatMap { t -> t.cores })
                 }
                 if (it.nearest()?.within(it, state.rules.enemyCoreBuildRadius) == true) {
-                    it.player?.sendMessage("[red]PVP保护时间,禁止在其他基地攻击".with())
+                    it.player?.sendMessage("[red]PVP protection time, forbidden to attack in other bases".with())
                     it.kill()
                 }
             }
@@ -33,10 +33,10 @@ listen<EventType.WorldLoadEvent> {
         while (leftTime > 0) {
             checkAttack(60)
             leftTime -= 60
-            broadcast("[yellow]PVP保护时间还剩 {time}分钟".with("time" to ceil(leftTime / 60f)), quite = true)
+            broadcast("[yellow]PVP protection time left {time} minutes".with("time" to ceil(leftTime / 60f)), quite = true)
             if (leftTime < 60) {
                 checkAttack(leftTime)
-                broadcast("[yellow]PVP保护时间已结束, 全力进攻吧".with())
+                broadcast("[yellow] PVP protection time is over, let's go all out!".with())
                 return@launch
             }
         }

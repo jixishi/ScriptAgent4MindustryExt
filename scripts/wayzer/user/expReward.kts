@@ -35,7 +35,7 @@ listen<EventType.PlayerChatEvent> {
         if (profile == null || finishProfile.contains(profile.id.value)) return@listen
         finishProfile.add(profile.id.value)
         profile.updateExp(3).forEach { p ->
-            p.sendMessage("[green]经验 +3")
+            p.sendMessage("[green]Experience +3")
         }
     }
 }

@@ -8,20 +8,20 @@ import java.time.Duration
 name = "扩展功能: 积分榜"
 //建议只修改下面一段,其他地方代码请勿乱动
 val msg = """
-    [magenta]欢迎[goldenrod]{player.name}[magenta]来到WZ服务器
-    [violet]当前地图为: [orange]{map.name}
-    [violet]服务器FPS: [orange]{fps}
-    [royal]输入/broad可以开关该显示
+    [magenta]Welcome [goldenrod]{player.name}[magenta] to BE6 server
+    [violet]Current map is: [orange]{map.name}
+    [violet]Server FPS: [orange]{fps}
+    [royal]Enter /broad to switch the display on/off
 """.trimIndent()
 
 val disabled = mutableSetOf<String>()
 
-command("broad", "开关积分板显示") {
+command("broad", "Switching scoreboard display") {
     this.type = CommandType.Client
     body {
         if (!disabled.remove(player!!.uuid()))
             disabled.add(player!!.uuid())
-        reply("[green]切换成功".with())
+        reply("[green]Switching successful".with())
     }
 }
 

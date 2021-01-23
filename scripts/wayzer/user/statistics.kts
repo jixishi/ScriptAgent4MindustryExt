@@ -108,8 +108,8 @@ fun onGameOver(winner: Team) {
     if (state.rules.infiniteResources || state.rules.editor) {
         return broadcast(
             """
-            [yellow]本局游戏时长: {gameTime:分钟}
-            [yellow]沙盒或编辑器模式,不计算贡献
+            [yellow]Game duration: {gameTime:minutes}
+            [yellow]Sandbox or editor mode, no contribution
         """.trimIndent().with("gameTime" to gameTime)
         )
     }
@@ -122,14 +122,14 @@ fun onGameOver(winner: Team) {
             .sortedByDescending { it.second.score }
     val list = sortedData.map { (player, data) ->
         totalTime += data.playedTime - data.idleTime
-        "[white]{pvpState}{player.name}[white]({statistics.playedTime:分钟}/{statistics.idleTime:分钟}/{statistics.buildScore:%.1f})".with(
+        "\n>------<\n[white]{pvpState}{player.name}[white](\n{statistics.playedTime:分钟}\n{statistics.idleTime:分钟}\n{statistics.buildScore:%.1f})".with(
             "player" to player, "statistics" to data, "pvpState" to if (data.win) "[green][胜][]" else ""
         )
     }
     broadcast("""
-        [yellow]本局游戏时长: {gameTime:分钟}
-        [yellow]有效总贡献时长: {totalTime:分钟}
-        [yellow]贡献排行榜(时长/挂机/建筑): {list}
+        [yellow]Game duration: {gameTime:min}
+        [yellow]Total contribution time: {totalTime:min}
+        [yellow]Contribution ranking (time/hangout/building): {list}
     """.trimIndent().with("gameTime" to gameTime, "totalTime" to Duration.ofSeconds(totalTime.toLong()), "list" to list))
 
     if (sortedData.isNotEmpty() && depends("wayzer/user/expReward") != null && gameTime > Duration.ofMinutes(15)) {
@@ -144,7 +144,7 @@ fun onGameOver(winner: Team) {
                 }
                 map.forEach { (profile, data) ->
                     profile.updateExp(data.exp).forEach {
-                        it.sendMessage("[green]经验 +${data.exp}")
+                        it.sendMessage("[green]experience +${data.exp}")
                     }
                     profile.save()
                 }

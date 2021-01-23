@@ -17,7 +17,7 @@ fun secureLog(tag: String, text: String) {
 fun ban(player: Player, uuid: String) {
     val target = netServer.admins.getInfoOptional(uuid) ?: return
     netServer.admins.banPlayerID(uuid)
-    broadcast("[red] 管理员禁封了{target.name}".with("target" to target))
+    broadcast("[red] admin banned {target.name}".with("target" to target))
     secureLog("Ban", "${player.name} Ban ${target.lastName}(${uuid})")
 }
 export(::secureLog, ::ban)
@@ -27,7 +27,7 @@ listen<EventType.PlayerBanEvent> {
     it.player?.con?.kick(Packets.KickReason.banned)
 }
 
-command("list", "列出当前玩家") {
+command("list", "List current players") {
     body {
         val list = Groups.player.map {
             "{player.name}[white]([red]{player.shortID}[white])".with("player" to it)
@@ -35,8 +35,8 @@ command("list", "列出当前玩家") {
         reply("{list}".with("list" to list))
     }
 }
-command("ban", "管理指令: 列出已ban用户，ban或解ban") {
-    usage = "[3位id]"
+command("ban", "Management commands: List ban users, ban or unban") {
+    usage = "[3-bit id]"
     permission = "wayzer.admin.ban"
     body {
         val uuid = arg.getOrNull(0)
@@ -51,17 +51,17 @@ command("ban", "管理指令: 列出已ban用户，ban或解ban") {
             netServer.admins.banned.find { it.id.startsWith(uuid) }?.let {
                 netServer.admins.unbanPlayerID(it.id)
                 secureLog("UnBan", "${player!!.name} unBan ${it.lastName}(${it.id})")
-                returnReply("[green]解Ban成功 {info.name}".with("info" to it))
+                returnReply("[green]Solving Ban successfully {info.name}".with("info" to it))
             }
             (netServer.admins.getInfoOptional(uuid))?.let {
                 netServer.admins.banPlayerID(uuid)
-                returnReply("[green]Ban成功 {player.name}".with("player" to it))
+                returnReply("[green]Ban Success {player.name}".with("player" to it))
             }
             if (player != null) Groups.player.find { it.uuid().startsWith(uuid) }?.let {
                 ban(player!!, it.uuid())
-                returnReply("[green]Ban成功 {player.name}".with("player" to it))
+                returnReply("[green]Ban Success {player.name}".with("player" to it))
             }
-            reply("[red]找不到该用户,请确定三位字母id输入正确! /list 或 /ban 查看".with())
+            reply("[red]Can't find the user, please make sure the three letter id is entered correctly! /list or /ban View".with())
         }
     }
 }

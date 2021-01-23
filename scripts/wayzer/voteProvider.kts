@@ -18,11 +18,11 @@ import kotlin.math.max
 
 name = "投票服务"
 
-val voteTime by config.key(Duration.ofSeconds(60)!!, "投票时间")
+val voteTime by config.key(Duration.ofSeconds(60)!!, "Voting time")
 
 inner class VoteCommands : Commands() {
     override fun invoke(context: CommandContext) {
-        if (VoteHandler.voting.get()) return context.reply("[red]投票进行中".with())
+        if (VoteHandler.voting.get()) return context.reply("[red]Voting is underway".with())
         super.invoke(context)
         if (VoteHandler.voting.get()) {//success
             Call.sendMessage(
@@ -34,8 +34,8 @@ inner class VoteCommands : Commands() {
     }
 
     override fun onHelp(context: CommandContext, explicit: Boolean) {
-        if (!explicit) context.reply("[red]错误投票类型,请检查输入是否正确".with())
-        context.sendMenuPhone("可用投票类型", subCommands.values.toSet().filter {
+        if (!explicit) context.reply("[red]Wrong vote type, please check if the input is correct".with())
+        context.sendMenuPhone("Available Voting Types", subCommands.values.toSet().filter {
             it.permission.isBlank() || context.hasPermission(it.permission)
         }, 1, 100) {
             context.helpInfo(it, false)
@@ -53,7 +53,7 @@ inner class VoteHandler : VoteService {
     //private set
     val voting = AtomicBoolean(false)
     private val voted: MutableSet<String> = ConcurrentHashMap.newKeySet()
-    private var lastAction = 0L //最后一次玩家退出或投票成功时间,用于处理单人投票
+    private var lastAction = 0L //The last time a player quit or voted successfully, used to process single player votes
 
     lateinit var voteDesc: PlaceHoldContext
     override lateinit var requireNum: () -> Int
@@ -71,22 +71,22 @@ inner class VoteHandler : VoteService {
             try {
                 if (supportSingle && allCanVote().run { count(canVote) == 0 || singleOrNull() == player }) {
                     if (System.currentTimeMillis() - lastAction > 60_000) {
-                        broadcast("[yellow]单人快速投票{type}成功".with("type" to voteDesc))
+                        broadcast("[yellow] Single Quick Vote {type} Success".with("type" to voteDesc))
                         lastAction = System.currentTimeMillis()
                         Core.app.post(onSuccess)
                         return@launch
                     } else
-                        broadcast("[red]距离上一玩家离开或上一投票成功不足1分钟,快速投票失败".with())
+                        broadcast("[red]Less than 1 minute after the last player left or the last successful vote, quick vote failed".with())
                 }
                 broadcast(
-                    "[yellow]{player.name}[yellow]发起{type}[yellow]投票,共需要{require}人,输入y或1同意"
+                    "[yellow]{player.name}[yellow] initiate {type}[yellow] vote, total {require} people, enter y or 1 to agree"
                         .with("player" to player, "require" to requireNum(), "type" to voteDesc)
                 )
                 repeat(voteTime.seconds.toInt()) {
                     delay(1000L)
-                    if (voted.size >= requireNum()) {//提前结束
+                    if (voted.size >= requireNum()) {//Early end
                         broadcast(
-                            "[yellow]{type}[yellow]投票结束,投票成功.[green]{voted}/{all}[yellow],达到[red]{require}[yellow]人"
+                            "[yellow]{type}[yellow]Voting is over, voting is successful. [green]{voted}/{all}[yellow], reached [red]{require}[yellow] people"
                                 .with(
                                     "type" to voteDesc,
                                     "voted" to voted.size,
@@ -100,7 +100,7 @@ inner class VoteHandler : VoteService {
                 }
                 //TimeOut
                 broadcast(
-                    "[yellow]{type}[yellow]投票结束,投票失败.[green]{voted}/{all}[yellow],未达到[red]{require}[yellow]人"
+                    "[yellow]{type}[yellow]Voting is over, voting failed. [green]{voted}/{all}[yellow], not reached [red]{require}[yellow] people"
                         .with(
                             "type" to voteDesc,
                             "voted" to voted.size,
@@ -128,10 +128,10 @@ inner class VoteHandler : VoteService {
 
     fun onVote(p: Player) {
         if (!voting.get()) return
-        if (p.uuid() in voted) return p.sendMessage("[red]你已经投票".with())
-        if (!canVote(p)) return p.sendMessage("[red]你不能对此投票".with())
+        if (p.uuid() in voted) return p.sendMessage("[red]You have voted".with())
+        if (!canVote(p)) return p.sendMessage("[red]You can't vote on this".with())
         voted.add(p.uuid())
-        broadcast("[green]投票成功,还需{left}人投票".with("left" to (requireNum() - voted.size)), quite = true)
+        broadcast("[green]Voting success, still need {left} people to vote".with("left" to (requireNum() - voted.size)), quite = true)
     }
 
     fun onLeave(p: Player) {
@@ -156,12 +156,12 @@ inner class VoteHandler : VoteService {
 
 provide<VoteService>(VoteHandler)
 
-command("vote", "发起投票") {
+command("vote", "Initiate a poll") {
     type = CommandType.Client
     aliases = listOf("投票")
     body(VoteHandler.voteCommands)
 }
-command("votekick", "(弃用)投票踢人") {
+command("votekick", "(Abstain) Vote Kicker") {
     this.usage = "<player...>";this.type = CommandType.Client
     body {
         //Redirect
@@ -171,13 +171,13 @@ command("votekick", "(弃用)投票踢人") {
 }
 
 listen<EventType.PlayerChatEvent> { e ->
-    e.player.textFadeTime = 0f //防止因为不说话判定为挂机
+    e.player.textFadeTime = 0f //Prevent the judgment of hanging for not talking
     if (e.message.equals("y", true) || e.message == "1") VoteHandler.onVote(e.player)
 }
 
 listen<EventType.PlayerJoin> {
     if (!VoteHandler.voting.get()) return@listen
-    it.player.sendMessage("[yellow]当前正在进行{type}[yellow]投票，输入y或1同意".with("type" to VoteHandler.voteDesc))
+    it.player.sendMessage("[yellow] currently voting on {type}[yellow], enter y or 1 to agree".with("type" to VoteHandler.voteDesc))
 }
 
 listen<EventType.PlayerLeave> {

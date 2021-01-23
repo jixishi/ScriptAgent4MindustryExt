@@ -9,8 +9,9 @@ import mindustry.world.blocks.storage.CoreBlock
 fun CoreBlock.CoreBuild.showInfo(p: Player) {
     if (p.con == null) return
     fun draw(dotY: Float, text: String) = Call.label(p.con, text, 60 * 5f/*5分钟*/, x, y + dotY)
-    draw(0f, "[purple]====[white]${state.map.name()}[purple]====")
-    draw(-10f, "[purple]By: [scarlet]${state.map.author()}")
+    draw(0f, "[purple]====[white]${world.map.name()}[purple]====")
+    draw(-10f, "[purple]By: [scarlet]${world.map.author()}")
+    draw(10f, "[#00bbff]Servant：[red]机[pink]械[purple]师")
     state.map.description().apply {
         var lastEnd = -1
         var pos = -20f

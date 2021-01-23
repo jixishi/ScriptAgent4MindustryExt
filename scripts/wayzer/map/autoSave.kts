@@ -7,14 +7,14 @@ import java.util.concurrent.TimeUnit
 
 name = "自动存档"
 val autoSaveRange = 100 until 106
-command("slots", "列出自动保存的存档") {
+command("slots", "List automatically saved archives") {
     body {
         val list = autoSaveRange.map { it to SaveIO.fileFor(it) }.filter { it.second.exists() }.map { (id, file) ->
             "[red]{id}[]: [yellow]Save on {date:hh:mm}".with("id" to id, "date" to file.lastModified().let(::Date))
         }
         reply(
             """
-            |[green]===[white] 自动存档 [green]===
+            |[green]===[white] Auto-archive [green]===
             |{list:${"\n"}}
             |[green]===[white] {range} [green]===
         """.trimMargin().with("range" to autoSaveRange, "list" to list)
@@ -41,7 +41,7 @@ onEnable {
                 Core.app.post {
                     val id = autoSaveRange.first + minute / 10
                     SaveIO.save(SaveIO.fileFor(id))
-                    broadcast("[green]自动存档完成(整10分钟一次),存档号 [red]{id}".with("id" to id))
+                    broadcast("[green]Auto-archive complete (once every 10 minutes), archive number [red]{id}".with("id" to id))
                 }
             }
         }

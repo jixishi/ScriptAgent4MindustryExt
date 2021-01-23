@@ -1,15 +1,15 @@
 package wayzer.ext
 
-command("status", "获取服务器信息") {
+command("status", "Get server information") {
     aliases = listOf("服务器状态")
     body {
         reply(
             """
-            |[green]服务器状态[]
-            |   [green]地图: [ [yellow]{map.id} [green]][yellow]{map.name}[green] 模式: [yellow]{map.mode} [green]波数[yellow]{state.wave}
-            |   [green]{fps} FPS, {heapUse} MB used[]
-            |   [green]总单位数: {state.allUnit} 玩家数: {state.playerSize}
-            |   [yellow]被禁封总数: {state.allBan}
+            | [green]Server Status[]
+            | [green]map: [ [yellow]{map.id} [green]][yellow]{map.name}[green] mode: [yellow]{map.mode} [green]wave count [yellow]{state.wave}
+            | [green]{fps} FPS, {heapUse} MB used[]
+            | [green]TotalUnits: {state.allUnit} Players: {state.playerSize}
+            | [yellow]Total banned: {state.allBan}
             """.trimMargin().with()
         )
     }

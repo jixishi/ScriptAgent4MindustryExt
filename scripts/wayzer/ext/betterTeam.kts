@@ -43,7 +43,7 @@ fun changeTeam(p: Player, team: Team) {
 
 export(::changeTeam)
 
-command("ob", "切换为观察者") {
+command("ob", "Switch to observer") {
     type = CommandType.Client
     permission = "wayzer.ext.observer"
     body {
@@ -51,32 +51,32 @@ command("ob", "切换为观察者") {
             val team = netServer.assignTeam(player!!)
             changeTeam(player!!, team)
             broadcast(
-                "[yellow]玩家[green]{player.name}[yellow]重新投胎到{team.colorizeName}"
+                "[yellow]player[green]{player.name}[yellow]reincarnate to {team.colorizeName}"
                     .with("player" to player!!, "team" to team), quite = true
             )
         } else {
             changeTeam(player!!, spectateTeam)
-            broadcast("[yellow]玩家[green]{player.name}[yellow]选择成为观察者".with("player" to player!!), quite = true)
-            player!!.sendMessage("[green]再次输入指令可以重新投胎")
+            broadcast("[yellow]player[green]{player.name}[yellow]choose to be an observer".with("player" to player!!), quite = true)
+            player!!.sendMessage("[green] Enter the command again to reincarnate")
         }
     }
 }
 
-command("team", "管理指令: 修改自己或他人队伍(PVP模式)") {
-    usage = "[队伍,不填列出] [玩家3位id,默认自己]"
+command("team", "Management commands: Modify your own or others' teams (PVP mode)") {
+    usage = "[Team, do not fill in the list] [Player 3 ids, default themselves]"
     permission = "wayzer.ext.team.change"
     body {
-        if (!state.rules.pvp) returnReply("[red]仅PVP模式可用".with())
+        if (!state.rules.pvp) returnReply("[red]Available in PVP mode only".with())
         val team = arg.getOrNull(0)?.toIntOrNull()?.let { Team.get(it) } ?: let {
             val teams = Team.baseTeams
                 .mapIndexed { i, t -> "{id}({team.colorizeName}[])".with("id" to i, "team" to t) }
-            returnReply("[yellow]可用队伍: []{list}".with("list" to teams))
+            returnReply("[yellow]Available teams: []{list}".with("list" to teams))
         }
         val player = arg.getOrNull(1)?.let {
             Groups.player.find { p -> p.uuid().startsWith(it) }
-                ?: returnReply("[red]找不到玩家,请使用/list查询正确的3位id".with())
-        } ?: player ?: returnReply("[red]请输入玩家ID".with())
+                ?: returnReply("[red]Can't find the player, please use /list to look up the correct 3 digit id".with())
+        } ?: player ?: returnReply("[red]Please enter the player ID".with())
         changeTeam(player, team)
-        broadcast("[green]管理员更改了{player.name}[green]为{team.colorizeName}".with("player" to player, "team" to team))
+        broadcast("[green]admin changed {player.name}[green] to {team.colorizeName}".with("player" to player, "team" to team))
     }
 }
