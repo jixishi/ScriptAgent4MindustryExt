@@ -1,22 +1,100 @@
-![For Mindustry](https://img.shields.io/badge/For-Mindustry-orange)
-![Lang CN](https://img.shields.io/badge/Lang-ZH--CN-blue)
-![Support 5.0](https://img.shields.io/badge/Support_Version-104-success)
-![GitHub Releases](https://img.shields.io/github/downloads/way-zer/ScriptAgent4MindustryExt/latest/total)
-[![Build Status](https://travis-ci.com/way-zer/ScriptAgent4MindustryExt.svg?branch=1.1)](https://travis-ci.com/way-zer/ScriptAgent4MindustryExt)
+[ ![Download](https://api.bintray.com/packages/way-zer/maven/cf.wayzer%3AScriptAgent4Mindustry/images/download.svg) ](https://bintray.com/way-zer/maven/cf.wayzer%3AScriptAgent4Mindustry/_latestVersion)
 # ScriptAgent for Mindustry
-一个强大的Mindustry脚本插件,基于kts定义的DSL  
-A strong script plugin for Mindustry by kts(for english README see [me](./README_en.md))
-本仓库包含加载器及大量功能性脚本(可使用或做例子)
-This repository contains the loader and lots of strong scripts(use or for example)
-## 特性
-- 强大,基于kotlin,可以访问所有Java接口(所有插件能干的，脚本都能干)
-- 快速,脚本加载完成后，转换为jvm字节码，和java插件没有性能差距
-- 灵活,模块与脚本都有完整的生命周期，随时可进行热加载和热重载
-- 快速,一大堆开发常用的辅助函数,无需编译,即可快速部署到服务器
-- 智能,开发时,拥有IDEA(或AndroidStudio)的智能补全
-- 可定制,插件除核心部分外,均使用脚本实现,可根据自己需要进行修改,另外,模块定义脚本也可以为脚本扩充DSL
-## 具体功能
-查阅[Wiki](https://github.com/way-zer/ScriptAgent4MindustryExt/wiki)
-## 版权
-- 插件本体：未经许可禁止转载和用作其他用途
-- 脚本：归属脚本制作者，本仓库脚本转载需注明本页面链接
+[zh-CN](https://github.com/way-zer/ScriptAgent4MindustryExt)
+A strong script plugin for Mindustry by kts
+
+## features
+- Powerful, based on **kotlin**, can access all Java interfaces (all plugins can do it, scripts can do it)
+- Fast, after the script is loaded, it is converted to jvm byteCode, and there is no performance gap with plugin written in java
+- Flexible, modules and scripts have a complete life cycle, and can be hot-loaded and hot-reloaded at any time
+- Fast, a lot of helper functions commonly used for development, can be quickly deployed to the server without compilation
+- Smart, with IDEA (or AndroidStudio) smart completion
+- Customizable, except for the core loader, the plugin is implemented by scripts, which can be modified according to your own needs.  
+    In addition, the module definition script can extend content scripts (DSL,library,manager,defaultImport)
+## Install This Plugin
+1. Download the **jar**, see **Download** badge
+2. Install the plugin in server(Placed under config/mods)
+3. Install the scripts and place them (files and folders in /src) directly into the plugin configuration directory (config/)
+### Base Commands
+There is no permission system, so only administrator and console can use these commands
+- **sMod** \<reload/list\> \[name\] - List or reload modules
+- **sReload** \<name\> \[modName\] - reload script
+- **sList** \[modName\] - List all loaded scripts in the module
+- **sLoad** \<path\> - Load a new module or script (specified to the full file name)
+## How to develop scripts
+1. Copy this repository (or configure gradle yourself, see build.gradle.kts)
+2. Import the project in IDEA (recommended to import as Project to avoid interference)
+3. Synchronous Gradle
+## Directory Structure
+- scripts.init.kts (Module definition script)
+- scripts(Module root directory)
+    - lib(Module library directory, write in **.kt**, shared by all scripts of the module, the same life cycle as the module)
+    - .metadata(Module metadata for IDE and other compilers to analyze and compile, and can be generated when the plugin is run)
+    - manager.content.kts(Script to implement your logic)
+### Script properties
+#### Common properties
+Features of both scripts
+```kotlin
+@file:ImportByClass("mindustry.Vars") //Import a loaded library
+//Import Maven dependencies (automatic download when can't find the cache , the dependencies will not be resolved)
+@file:MavenDepends("de.tr7zw:item-nbt-api:2.2.0","https://repo.codemc.org/repository/maven-public/")
+@file:ImportScript("") //Import other source code (often refer to the library outside the module library, the same life cycle as the script)
+//Some attributes
+name.set("Base Module")//Set current script name (for display purposes only)
+val enabled:Boolean
+sourceFile.get()//Get the current script source file (not recommended for abuse)
+//Life cycle
+onEnable{}
+onDisable{}
+```
+#### init.kts(Module definition script)
+Mainly responsible for extending the definition of subscripts and providing custom DSL  
+Can be extended using extension functions (attributes) and DSLKey  
+Within the lifecycle function, register or clean up for subscripts
+```kotlin
+import cf.wayzer.script_agent.mindustry.Helper.baseConfig
+addLibraryByClass("mindustry.Vars")//Similar to ImportByClass, targeted for subscripts
+addLibrary(File("xxxx"))//Import library files for subscripts
+addLibraryByName("xxxx")//Provide names to find dependent libraries, for example: kotlin-stdlib
+addDefaultImport("mindustry.Vars.*")//Add default import, no need for subscript import(cooperate with extension functions)
+baseConfig()//Some basic extensions for Mindustry
+generateHelper()//Generate metadata (runtime)
+
+children.get() //Get all subscript instances
+//Lifecycle functions related to subscripts
+onBeforeContentEnable{script-> }
+onAfterContentEnable{script-> }
+onBeforeContentDisable{script-> }
+onAfterContentDisable{script-> }
+```
+#### content.kts(Module content script)
+The main bearer of business logic
+```kotlin
+module.get() //Get instance of module definition script (not recommended for abuse)
+//interfaces for internals
+import cf.wayzer.script_agent.MindustryMainImpl
+Manager.scriptManager //Get Script Manager(not recommended for abuse)
+MindustryMainImpl.clientCommand //commandHandler for client commands (not recommended for abuse)
+MindustryMainImpl.serverCommand //commandHandler for console commands (not recommended for abuse)
+//Mindustry basic extensions
+this.PlaceHoldApi //Useful for sharing variables or exposing function interfaces across the entire plugin(don't expose classes out of lifecycle)
+command(name,description,params="",type=Both){sender,arg->} //Register command (Type setting is client or background instruction, p==null when executed by console)
+listen<Event>{e-> } //listen to Event
+registerScheduleTask(name){firstRun->} //Register schedule tasks, the plugin manages an independent thread to run, does not start automatically
+//Helper function
+getScheduleTask(name).start(param) //Corresponds to registerAsyncTask
+String.with(vararg vars):PlaceHoldContext //Convert string to PlaceHoldContext
+Player?.sendMessage(text: PlaceHoldContext,type= MsgType.Message,time = 10f) //Send a message to the player, automatically handle the player variables, if the player is null, the console
+broadcast(text:PlaceHoldContext, type= MsgType.Message, time10f, quite = false, players = Vars.playerGroup) //Broadcast message (quite: whether hidden from the console)
+```
+### Precautions
+1. After reloading the script, the same class is not necessarily the same, pay attention to controlling the life cycle  
+    If you need similar operations, you can set up an abstract interface to store variables in a longer life cycle(less frequent reloading)
+## Existing modules
+- scripts(Main module with basic extensions,you can write simple scripts there)
+- wayzer(Server basic management module, Rewritten from [MyMindustryPlugin](https://github.com/way-zer/MyMindustryPlugin))
+## Specific functions
+Check out the [Wiki](https://github.com/jixishi/ScriptAgent4MindustryExt-English-Version/wiki)
+## copyright
+- Plugin：Reprinting and other uses (including decompiling not for use) are prohibited without permission
+- Script: belongs to the script maker, the reprint of scripts in this repository needs to indicate the link to this page(or this repository)
