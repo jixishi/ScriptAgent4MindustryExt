@@ -60,32 +60,32 @@ fun VoteService.register() {
                 arg[0].toIntOrNull() in 1..maps.size -> {
                     maps[arg[0].toInt() - 1]
                 }
-                else -> return@launch reply("[red]错误参数".with())
+                else -> return@launch reply("[red]Error parameters".with())
             }
             start(
                 player!!,
-                "换图({nextMap.id}: [yellow]{nextMap.name}[yellow])".with("nextMap" to map),
+                "changeMap({nextMap.id}: [yellow]{nextMap.name}[yellow])".with("nextMap" to map),
                 supportSingle = true
             ) {
                 if (!SaveIO.isSaveValid(map.file))
-                    return@start broadcast("[red]换图失败,地图[yellow]{nextMap.name}[green](id: {nextMap.id})[red]已损坏".with("nextMap" to map))
+                    return@start broadcast("[red]Failed to change map,Map[yellow]{nextMap.name}[green](id: {nextMap.id})[red] is corrupted".with("nextMap" to map))
                 depends("wayzer/user/statistics")?.import<(Team) -> Unit>("onGameOver")?.invoke(Team.derelict)
                 mapService.loadMap(map)
                 Core.app.post { // 推后,确保地图成功加载
-                    broadcast("[green]换图成功,当前地图[yellow]{map.name}[green](id: {map.id})".with())
+                    broadcast("[green] The change of map is successful, current map [yellow]{map.name}[green](id: {map.id})".with())
                 }
             }
         }
     }
-    addSubVote("投降或结束该局游戏，进行结算", "", "gameOver", "投降", "结算") {
+    addSubVote("Surrender or end the game and settle", "", "gameOver", "投降", "结算") {
         if (state.rules.pvp) {
             val team = player!!.team()
             if (!state.teams.isActive(team) || state.teams.get(team)!!.cores.isEmpty)
-                returnReply("[red]队伍已输,无需投降".with())
+                returnReply("[red]The team has lost, no need to surrender".with())
 
             canVote = canVote.let { default -> { default(it) && it.team() == team } }
             requireNum = { allCanVote().size }
-            start(player!!, "投降({team.colorizeName}[yellow]队|需要全队同意)".with("player" to player!!, "team" to team)) {
+            start(player!!, "Surrender ({team.colorizeName}[yellow] team|needs full team agreement)".with("player" to player!!, "team" to team)) {
                 state.teams.get(team).cores.forEach { Time.run(Random.nextFloat() * 60 * 3, it::kill) }
             }
         }
@@ -93,7 +93,7 @@ fun VoteService.register() {
             state.teams.get(player!!.team()).cores.forEach { Time.run(Random.nextFloat() * 60 * 3, it::kill) }
         }
     }
-    addSubVote("快速出波(默认10波,最高50)", "[波数]", "skipWave", "跳波") {
+    addSubVote("Fast wave (default 10 waves, maximum 50)", "[波数]", "skipWave", "跳波") {
         val lastResetTime by PlaceHold.reference<Instant>("state.startTime")
         val t = min(arg.firstOrNull()?.toIntOrNull() ?: 10, 50)
         start(player!!, "跳波({t}波)".with("t" to t), supportSingle = true) {
@@ -113,27 +113,27 @@ fun VoteService.register() {
             }
         }
     }
-    addSubVote("回滚到某个存档(使用/slots查看)", "<存档ID>", "rollback", "load", "回档") {
+    addSubVote("Rollback to an archive (use /slots to view)", "<ArchivingID>", "rollback", "load", "回档") {
         if (arg.firstOrNull()?.toIntOrNull() == null)
-            returnReply("[red]请输入正确的存档编号".with())
+            returnReply("[red]Please enter the correct archive number".with())
         val map = mapService.getSlot(arg[0].toInt())
-            ?: returnReply("[red]存档不存在或存档损坏".with())
+            ?: returnReply("[red]The archive does not exist or the archive is corrupted".with())
         start(player!!, "回档".with(), supportSingle = true) {
             depends("wayzer/user/statistics")?.import<(Team) -> Unit>("onGameOver")?.invoke(Team.derelict)
             mapService.loadSave(map)
             broadcast("[green]回档成功".with(), quite = true)
         }
     }
-    addSubVote("踢出某人15分钟", "<玩家名>", "kick", "踢出") {
+    addSubVote("Kick out someone for 15 minutes", "<Player Name>", "kick", "踢出") {
         val target = Groups.player.find { it.name == arg.joinToString(" ") }
-            ?: returnReply("[red]请输入正确的玩家名，或者到列表点击投票".with())
+            ?: returnReply("[red]Please enter the correct player name, or go to the list and click on vote".with())
         val adminBan = depends("wayzer/admin")?.import<(Player, String) -> Unit>("ban")
         if (hasPermission("wayzer.vote.ban") && adminBan != null) {
             return@addSubVote adminBan(player!!, target.uuid())
         }
-        start(player!!, "踢人(踢出[red]{target.name}[yellow])".with("target" to target)) {
+        start(player!!, "Kicker(kick out [red]{target.name}[yellow])".with("target" to target)) {
             target.info.lastKicked = Time.millis() + (15 * 60 * 1000) //Kick for 15 Minutes
-            target.con?.kick("[yellow]你被投票踢出15分钟")
+            target.con?.kick("[yellow] You were voted out for 15 minutes")
             val secureLog = depends("wayzer/admin")?.import<(String, String) -> Unit>("secureLog") ?: return@start
             secureLog(
                 "Kick",
@@ -141,18 +141,18 @@ fun VoteService.register() {
             )
         }
     }
-    addSubVote("清理本队建筑记录", "", "clear", "清理", "清理记录") {
+    addSubVote("Clean up our team's building records", "", "clear", "清理", "清理记录") {
         val team = player!!.team()
 
         canVote = canVote.let { default -> { default(it) && it.team() == team } }
         requireNum = { ceil(allCanVote().size * 2.0 / 5).toInt() }
-        start(player!!, "清理建筑记录({team.colorizeName}[yellow]队|需要2/5同意)".with("team" to team)) {
+        start(player!!, "Clear building records ({team.colorizeName}[yellow] team|needs 2/5 consent)".with("team" to team)) {
             team.data().blocks.clear()
         }
     }
-    addSubVote("自定义投票", "<内容>", "text", "文本", "t") {
-        if (arg.isEmpty()) returnReply("[red]请输入投票内容".with())
-        start(player!!, "自定义([green]{text}[yellow])".with("text" to arg.joinToString(" "))) {}
+    addSubVote("Customized Voting", "<Content>", "text", "文本", "t") {
+        if (arg.isEmpty()) returnReply("[red]Please enter your vote".with())
+        start(player!!, "custom([green]{text}[yellow])".with("text" to arg.joinToString(" "))) {}
     }
 }
 

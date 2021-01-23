@@ -13,7 +13,7 @@ var groups by config.key(
             "wayzer.maps.host", "wayzer.maps.load", "wayzer.ext.team.change",
         ),
     ),
-    "权限设置", "特殊组有:@default,@admin,@lvl0,@lvl1等,用户qq可单独做组", "值为权限，@开头为组,支持末尾通配符.*"
+    "Permission settings", "特殊组有:@default,@admin,@lvl0,@lvl1等,用户qq可单独做组", "值为权限，@开头为组,支持末尾通配符.*"
 )
 
 fun hasPermission(permission: String, list: List<String>): Boolean {
@@ -60,7 +60,7 @@ listenTo<PermissionRequestEvent> {
     }
 }
 
-command("permission", "权限系统配置") {
+command("permission", "Permission system configuration") {
     permission = "wayzer.permission"
     usage = "<group> <add/list/remove/delGroup> [permission]"
     onComplete {
@@ -68,28 +68,28 @@ command("permission", "权限系统配置") {
         onComplete(1) { listOf("add", "list", "remove", "addGroup") }
     }
     body {
-        if (arg.isEmpty()) returnReply("当前已有组: {list}".with("list" to groups.keys))
+        if (arg.isEmpty()) returnReply("Current group: {list}".with("list" to groups.keys))
         if (arg.size < 2) replyUsage()
         val group = arg[0]
         when (arg[1].toLowerCase()) {
             "add" -> {
-                if (arg.size < 3) returnReply("[red]请输入需要增减的权限".with())
+                if (arg.size < 3) returnReply("[red]Please enter the permissions you need to add or remove".with())
                 val now = groups[group].orEmpty()
                 if (arg[2] !in now)
                     groups = groups + (group to (now + arg[2]))
                 returnReply(
-                    "[green]{op}权限{permission}到组{group}".with(
+                    "[green]{op} permission {permission} to group {group}".with(
                         "op" to "添加", "permission" to arg[2], "group" to group
                     )
                 )
             }
             "remove" -> {
-                if (arg.size < 3) returnReply("[red]请输入需要增减的权限".with())
+                if (arg.size < 3) returnReply("[red]Please enter the permissions you need to add or remove".with())
                 val now = groups[group].orEmpty()
                 if (arg[2] in now)
                     groups = groups + (group to (now - arg[2]))
                 returnReply(
-                    "[green]{op}权限{permission}到组{group}".with(
+                    "[green]{op} permission {permission} to group {group}".with(
                         "op" to "移除", "permission" to arg[2], "group" to group
                     )
                 )
@@ -97,7 +97,7 @@ command("permission", "权限系统配置") {
             "list" -> {
                 val now = groups[group].orEmpty()
                 returnReply(
-                    "[green]组{group}当前拥有权限:[]\n{list}".with(
+                    "The [green]group{group} currently has permissions: []\n{list}".with(
                         "group" to group, "list" to now.toString()
                     )
                 )
@@ -107,7 +107,7 @@ command("permission", "权限系统配置") {
                 if (group in groups)
                     groups = groups - group
                 returnReply(
-                    "[yellow]移除权限组{group},原来含有:{list}".with(
+                    "[yellow] Remove permission group {group}, which originally contained:{list}".with(
                         "group" to group, "list" to now.toString()
                     )
                 )
@@ -117,7 +117,7 @@ command("permission", "权限系统配置") {
     }
 }
 
-command("madmin", "列出或添加删除管理") {
+command("madmin", "List or add delete management") {
     this.usage = "[uuid/qq]"
     this.permission = "wayzer.permission.admin"
     body {

@@ -11,8 +11,8 @@ import javax.imageio.ImageIO
 
 //WayZer 版权所有(禁止删除版权声明)
 
-val pixelDir by config.key(dataDirectory.child("pixels").file()!!, "像素画原图存放目录")
-val maxSize by config.key(32, "最大像素画大小")
+val pixelDir by config.key(dataDirectory.child("pix").file()!!, "像素画原图存放目录")
+val maxSize by config.key(64, "最大像素画大小")
 
 fun handle(file: File, body: (x: Int, y: Int, rgb: Int) -> Unit) {
     var img = ImageIO.read(file)
@@ -76,7 +76,7 @@ fun draw(p: Player, file: File) {
     }
 }
 
-command("pixel", "绘制像素画") {
+command("pixel", "Drawing pixel pictures") {
     usage = "[fileName]"
     type = CommandType.Client
     permission = id.replace("/", ".")
@@ -86,17 +86,17 @@ command("pixel", "绘制像素画") {
             val list = (pixelDir.listFiles() ?: emptyArray()).joinToString("\n") { it.name }
             reply(
                 """
-            ==== 可用图片 ====
+            ==== Available images ====
             {list}
         """.trimIndent().with("list" to list)
             )
         } else {
             val file = pixelDir.resolve(arg[0])
-            if (!file.exists()) returnReply("[red]找不到对应文件".with())
-            reply("[yellow]准备开始绘制".with())
+            if (!file.exists()) returnReply("[red]The corresponding file could not be found".with())
+            reply("[yellow] Ready to start drawing".with())
             launch(Dispatchers.game) {
                 draw(player!!, file)
-                reply("[green]绘制完成".with())
+                reply("[green]Finished drawing".with())
             }
         }
     }

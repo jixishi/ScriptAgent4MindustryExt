@@ -9,7 +9,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-val customWelcome by config.key(false, "是否开启自定义进服信息(中文)")
+val customWelcome by config.key(true, "是否开启自定义进服信息(中文)")
 
 fun getIcon(level: Int): Char {
     if (level <= 0) return (63611).toChar()
@@ -35,7 +35,7 @@ fun updateExp(p: PlayerProfile, dot: Int): List<Player> {
         totalExp += dot
         if (level(totalExp) != level(totalExp - dot)) {
             players.forEach {
-                it.sendMessage("[gold]恭喜你成功升级到{level}级".with("level" to level(totalExp)))
+                it.sendMessage("[gold] Congratulations on your successful upgrade to {level}".with("level" to level(totalExp)))
                 it.name = it.name.replaceFirst(Regex("<.>"), "<${getIcon(level(totalExp))}>")
             }
         }
@@ -54,6 +54,6 @@ listen<EventType.PlayerConnect> {
 
 listen<EventType.PlayerJoin> {
     if (!customWelcome) return@listen
-    it.player.sendMessage("[cyan][+]{player.name} [gold]加入了服务器".with("player" to it.player))
-    broadcast("[cyan][+]{player.name} [goldenrod]加入了服务器".with("player" to it.player))
+    it.player.sendMessage("[cyan][+]{player.name} [gold] joined the server".with("player" to it.player))
+    broadcast("[cyan][+]{player.name} [goldenrod] joined the server".with("player" to it.player))
 }

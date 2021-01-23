@@ -18,9 +18,9 @@ import java.time.Duration
 name = "基础: 地图控制与管理"
 
 val configEnableInternMaps by config.key(false, "是否开启原版内置地图")
-val mapsDistinguishMode by config.key(false, "是否在/maps区分不同模式的地图")
+val mapsDistinguishMode by config.key(true, "是否在/maps区分不同模式的地图")
 val configTempSaveSlot by config.key(111, "临时缓存的存档格位")
-val mapsPrePage by config.key(9, "/maps每页显示数")
+val mapsPrePage by config.key(10, "/maps每页显示数")
 
 @Suppress("PropertyName")
 val MapManager = MapManager()
@@ -117,15 +117,15 @@ inner class MapManager : MapService {
 provide<MapService>(MapManager)
 
 PlaceHold.registerForType<Map>(this).apply {
-    registerChild("id", "在/maps中的id", DynamicVar.obj { obj ->
+    registerChild("id", "id in /maps", DynamicVar.obj { obj ->
         MapManager.maps.indexOfFirst { it.file == obj.file } + 1
     })
-    registerChild("mode", "地图设定模式", DynamicVar.obj { obj ->
+    registerChild("mode", "Map Setting Mode", DynamicVar.obj { obj ->
         MapManager.bestMode(obj).name
     })
 }
 
-command("maps", "列出服务器地图") {
+command("maps", "List server map") {
     usage = "[page/pvp/attack/all] [page]"
     aliases = listOf("地图")
     body {
@@ -137,15 +137,15 @@ command("maps", "列出服务器地图") {
                 else -> Gamemode.survival.takeIf { mapsDistinguishMode }
             }
         }
-        if (mapsDistinguishMode) reply("[yellow]默认只显示所有生存图,输入[green]/maps pvp[yellow]显示pvp图,[green]/maps attack[yellow]显示攻城图[green]/maps all[yellow]显示所有".with())
+        if (mapsDistinguishMode) reply("By default [yellow] only shows all survival maps, enter [green]/maps pvp[yellow] to show pvp maps, [green]/maps attack[yellow] to show siege maps [green]/maps all[yellow] to show all".with())
         val page = arg.lastOrNull()?.toIntOrNull()
         var maps = MapManager.maps.mapIndexed { index, map -> (index + 1) to map }
         maps = if (arg.getOrNull(0) == "new")
             maps.sortedByDescending { it.second.file.lastModified() }
         else
             maps.filter { mode == null || MapManager.bestMode(it.second) == mode }
-        sendMenuPhone("服务器地图 By WayZer", maps, page, mapsPrePage) { (id, map) ->
-            "[red]{id}[green]({map.width},{map.height})[]:[yellow]{map.fileName}[] | [blue]{map.name}"
+        sendMenuPhone("Server Map [#00bbff] Rotterdam: [red]机[pink]械[purple]师", maps, page, mapsPrePage) { (id, map) ->
+            "[pink]{id}[green]({map.width},{map.height})[]:[yellow]{map.fileName}[] | [#00bbff]{map.name}"
                 .with("id" to "%2d".format(id), "map" to map)
         }
     }
@@ -168,12 +168,12 @@ listen<EventType.GameOverEvent> { event ->
         else "&lcGame over! Reached wave &ly${state.wave}&lc with &ly${Groups.player.size()}&lc players online on map &ly${state.map.name()}&lc."
     )
     val map = MapManager.nextMap(state.map)
-    val winnerMsg: Any = if (state.rules.pvp) "[YELLOW] {team.colorizeName} 队胜利![]".with("team" to event.winner) else ""
+    val winnerMsg: Any = if (state.rules.pvp) "[YELLOW] {team.colorizeName} Team win!".with("team" to event.winner) else ""
     val msg = """
-                | [SCARLET]游戏结束![]"
+                | [SCARLET] Game over! []"
                 | {winnerMsg}
-                | 下一张地图为:[accent]{nextMap.name}[] By: [accent]{nextMap.author}[]
-                | 下一场游戏将在 {waitTime} 秒后开始
+                | The next map is: [accent]{nextMap.name}[] By: [accent]{nextMap.author}[]
+                | The next game will start in {waitTime} seconds
             """.trimMargin().with("nextMap" to map, "winnerMsg" to winnerMsg, "waitTime" to waitingTime.seconds)
     broadcast(msg, gameOverMsgType, quite = true)
     ContentHelper.logToConsole("Next Map is ${map.name()}")
@@ -184,28 +184,28 @@ listen<EventType.GameOverEvent> { event ->
         MapManager.loadMap(map)
     }
 }
-command("host", "管理指令: 换图") {
+command("host", "Management Instructions: Change Map") {
     usage = "[mapId] [mode]"
     permission = "wayzer.maps.host"
     body {
         val map = if (arg.isEmpty()) MapManager.nextMap(state.map) else
             arg[0].toIntOrNull()?.let { MapManager.maps.getOrNull(it - 1) }
-                ?: returnReply("[red]请输入正确的地图ID".with())
+                ?: returnReply("[red]Please enter the correct map ID".with())
         val mode = arg.getOrNull(1)?.let { name ->
-            Gamemode.values().find { it.name == name } ?: returnReply("[red]请输入正确的模式".with())
+            Gamemode.values().find { it.name == name } ?: returnReply("[red]Please enter the correct mode".with())
         } ?: MapManager.bestMode(map)
         MapManager.loadMap(map, mode)
         broadcast("[green]强制换图为{map.name},模式{map.mode}".with("map" to map, "map.mode" to mode.name))
     }
 }
-command("load", "管理指令: 加载存档") {
+command("load", "Manage commands: Load archive") {
     usage = "<slot>"
     permission = "wayzer.maps.load"
     body {
         val file = arg[0].let { saveDirectory.child("$it.$saveExtension") }
         if (!file.exists() || !SaveIO.isSaveValid(file))
-            returnReply("[red]存档不存在或者损坏".with())
+            returnReply("[red]Archive does not exist or is corrupted".with())
         MapManager.loadSave(file)
-        broadcast("[green]强制加载存档{slot}".with("slot" to arg[0]))
+        broadcast("[green] Force load archive {slot}".with("slot" to arg[0]))
     }
 }

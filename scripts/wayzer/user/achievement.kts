@@ -6,7 +6,7 @@ import wayzer.lib.dao.Achievement
 fun finishAchievement(profile: PlayerProfile, name: String, exp: Int, broadcast: Boolean = false) {
     val updateExp = depends("wayzer/user/level")?.import<PlayerProfile.(Int) -> List<Player>>("updateExp")
     if (updateExp == null) {
-        println("[Error]等级系统不可用")
+        println("[Error] Rating system is not available")
         return
     }
     @OptIn(CacheEntity.NeedTransaction::class)
@@ -15,12 +15,12 @@ fun finishAchievement(profile: PlayerProfile, name: String, exp: Int, broadcast:
         val players = profile.updateExp(exp)
         profile.save()
         if (broadcast) {
-            broadcast("[gold][成就]恭喜{player.name}[gold]完成成就[scarlet]{name},[gold]获得[violet]{exp}[gold]经验".with(
+            broadcast("[gold][achievement] Congratulations to {player.name}[gold] for completing achievement [scarlet]{name},[gold] for gaining [violet]{exp}[gold] experience".with(
                     "player" to (players.firstOrNull() ?: ""), "name" to name, "exp" to exp
             ))
         } else {
             players.forEach {
-                it.sendMessage("[gold][成就]恭喜你完成成就[scarlet]{name},[gold]获得[violet]{exp}[gold]经验".with(
+                it.sendMessage("[gold][achievement]Congratulations on completing achievement [scarlet]{name},[gold]Gain [violet]{exp}[gold] experience".with(
                         "name" to name, "exp" to exp
                 ))
             }
@@ -29,7 +29,7 @@ fun finishAchievement(profile: PlayerProfile, name: String, exp: Int, broadcast:
 }
 export(::finishAchievement)
 
-command("achieve", "管理指令: 添加成就") {
+command("achieve", "Management Instructions: Add Achievement") {
     this.usage = "<qq> <name> <exp>"
     this.type = CommandType.Server
     permission = "wayzer.user.achieve"
@@ -40,10 +40,10 @@ command("achieve", "管理指令: 添加成就") {
                 @OptIn(CacheEntity.NeedTransaction::class)
                 PlayerProfile.getOrFindByQQ(it, false)
             }
-        } ?: returnReply("[red]找不到该用户".with())
+        } ?: returnReply("[red]The user could not be found".with())
         val name = arg[1]
-        val exp = arg[2].toIntOrNull() ?: returnReply("[red]请输入正确的数字".with())
+        val exp = arg[2].toIntOrNull() ?: returnReply("[red]Please enter the correct number".with())
         finishAchievement(profile, name, exp, false)
-        reply("[green]添加成功".with())
+        reply("[green]Added successfully".with())
     }
 }

@@ -38,7 +38,7 @@ object MapRenderer {
         if (content.blocks().isEmpty) return
         val img = Config.getModuleDir("wayzer").resolve("res/block_colors.png")
             .takeIf { it.exists() && it.canRead() }?.inputStream()?.use { ImageIO.read(it) }
-        if (img == null) Log.warn("[wayzer/ext/mapSnap]找不到图集res/block_colors.png")
+        if (img == null) Log.warn("[wayzer/ext/mapSnap] Can't find the image set res/block_colors.png")
         img?.apply {
             repeat(width) { i ->
                 val color = getRGB(i, 0)
@@ -51,7 +51,7 @@ object MapRenderer {
                     }
                 }
             }
-            Log.info("[wayzer/ext/mapSnap]加载方块颜色集成功")
+            Log.info("[wayzer/ext/mapSnap] Loading square color set successfully")
         }
     }
 
@@ -85,12 +85,12 @@ onEnable {
 }
 registerVar("wayzer.ext.mapSnap._get", "地图快照截图接口", { MapRenderer.img })
 
-command("saveSnap", "保存当前服务器地图截图") {
+command("saveSnap", "Save a screenshot of the current server map") {
     type = CommandType.Server
     body {
         val dir = dataDirectory.child("mapSnap").apply { mkdirs() }
         val file = dir.child("mapSnap-${SimpleDateFormat("YYYYMMdd-hhmm").format(Date())}.png")
         file.write().use { ImageIO.write(MapRenderer.img, "png", it) }
-        reply("[green]快照已保存到{file}".with("file" to file))
+        reply("[green] Snapshot saved to {file}".with("file" to file))
     }
 }

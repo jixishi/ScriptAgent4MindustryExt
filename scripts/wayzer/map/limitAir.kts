@@ -14,7 +14,7 @@ onEnable {
             if (net.server() && enable) {
                 Groups.unit.forEach {
                     if (it.type().flying && state.teams.closestEnemyCore(it.x, it.y, it.team)?.within(it, state.rules.enemyCoreBuildRadius) == true) {
-                        it.player?.sendMessage("[red]该地图限制空军,禁止进入敌方领空".with())
+                        it.player?.sendMessage("[red]This map restricts the air force and prohibits entry into enemy airspace".with())
                         it.kill()
                     }
                 }
@@ -26,11 +26,11 @@ onEnable {
 listen<EventType.BlockBuildEndEvent> {
     if (it.tile.block() == Blocks.airFactory && !it.breaking) {
         if (enable)
-            Call.label("[yellow]本地图限制空军,禁止进入敌方领空", 60f, it.tile.getX(), it.tile.getY())
+            Call.label("[yellow] This map is restricted to the air force, forbidden to enter the enemy airspace", 60f, it.tile.getX(), it.tile.getY())
     }
 }
 
 listen<EventType.PlayerJoin> {
     if (enable)
-        it.player.sendMessage("[yellow]本地图限制空军,禁止进入敌方领空")
+        it.player.sendMessage("[yellow] This map is restricted to the air force, forbidden to enter the enemy airspace")
 }
