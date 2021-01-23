@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 import java.util.*
 
-name = "基础: 玩家数据"
+name = "Base: Player Data"
 
 
 registerVarForType<Player>().apply {

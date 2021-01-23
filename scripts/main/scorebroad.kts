@@ -5,8 +5,8 @@ import mindustry.gen.Call
 import mindustry.gen.Groups
 import java.time.Duration
 
-name = "扩展功能: 积分榜"
-//建议只修改下面一段,其他地方代码请勿乱动
+name = "Extended Features: Leaderboard"
+//It is recommended to modify only the following paragraph, please do not move the code in other places
 val msg = """
     [magenta]Welcome [goldenrod]{player.name}[magenta] to BE6 server
     [violet]Current map is: [orange]{map.name}

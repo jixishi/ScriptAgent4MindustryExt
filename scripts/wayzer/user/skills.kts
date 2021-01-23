@@ -14,7 +14,7 @@ listen<EventType.ResetEvent> {
 }
 
 /**
- * @param coolDown in ms; <0 ->一局冷却
+ * @param coolDown in ms; <0 ->One game cooling
  */
 fun skill(name: String, desc: String, allowPvp: Boolean, coolDown: Int?, vararg aliases: String, body: CommandContext.() -> Unit) {
     command(name, desc) {

@@ -2,9 +2,9 @@ package wayzer.ext
 
 import java.time.Duration
 
-val type by config.key(MsgType.InfoMessage, "发送方式")
-val time by config.key(Duration.ofMinutes(10)!!,"公告间隔")
-val list by config.key(emptyList<String>(),"公告列表,支持颜色和变量")
+val type by config.key(MsgType.InfoMessage, "Sending method")
+val time by config.key(Duration.ofMinutes(10)!!,"Announcement interval")
+val list by config.key(emptyList<String>(),"Announcement list, support color and variables")
 
 var i = 0
 fun broadcast(){

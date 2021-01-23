@@ -5,9 +5,9 @@ import mindustry.gen.Groups
 import mindustry.net.Packets
 import java.util.*
 
-name = "基础: 禁封管理"
+name = "Basis: Ban Management"
 
-val pluginLog by config.key(dataDirectory.child("logs").child("secureLog.log").file()!!, "安全日记文件")
+val pluginLog by config.key(dataDirectory.child("logs").child("secureLog.log").file()!!, "Security diary files")
 
 fun secureLog(tag: String, text: String) {
     ContentHelper.logToConsole("[red][$tag][yellow]$text")

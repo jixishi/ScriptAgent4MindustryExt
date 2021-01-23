@@ -7,8 +7,8 @@ import java.time.Instant
 import java.util.*
 import kotlin.random.Random
 
-export(::generate)// 生成绑定码
-export(::check)// 检测绑定码
+export(::generate)// Generate binding code
+export(::check)// Detection of binding code
 
 class ExpireMutableMap<K, V> {
     class ExpireItem<V>(val time: Long, val v: V) : Comparable<ExpireItem<V>> {
@@ -46,7 +46,7 @@ class ExpireMutableMap<K, V> {
     private operator fun contains(key: K): Boolean = get(key) != null
 }
 
-val expireTime: Duration by config.key(Duration.ofMinutes(10), "随机绑定码到期时间")
+val expireTime: Duration by config.key(Duration.ofMinutes(10), "Random binding code expiration time")
 val map = ExpireMutableMap<Int, Long>()
 
 fun generate(qq: Long): Int {
@@ -81,7 +81,7 @@ command("genCode", "Administration command: Generate random binding codes for us
 }
 
 command("bind", "Binding users") {
-    usage = "<六位code>";this.type = CommandType.Client
+    usage = "<Six digit code>";this.type = CommandType.Client
     body {
         val qq = arg.firstOrNull()?.toIntOrNull()?.let(::check)
             ?: returnReply("[red]Please enter the correct 6-digit binding code, if not, you can find the robot in the group to get".with())
@@ -97,7 +97,7 @@ command("bind", "Binding users") {
             }
             val finishAchievement =
                 depends("wayzer/user/achievement")?.import<(PlayerProfile, String, Int, Boolean) -> Unit>("finishAchievement")
-            finishAchievement?.invoke(profile!!, "绑定账号", 100, false)
+            finishAchievement?.invoke(profile!!, "Binding account", 100, false)
         }
         reply("[green]Bind account[yellow]$qq[green] successfully.".with())
     }

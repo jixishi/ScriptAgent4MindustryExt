@@ -4,8 +4,8 @@ import arc.util.Interval
 import mindustry.game.EventType
 import mindustry.gen.Groups
 
-val unitToWarn by config.key(200, "开始警告的单位数")
-val unitToKill by config.key(230, "单位数上限，禁止产生新的")
+val unitToWarn by config.key(200, "Number of units to start warning")
+val unitToKill by config.key(230, "The maximum number of units prohibits the creation of new")
 
 val interval = Interval(1)
 listen<EventType.UnitCreateEvent> { e ->
@@ -19,11 +19,11 @@ listen<EventType.UnitCreateEvent> { e ->
     val count = Groups.unit.count { it.team == e.unit.team }
     when {
         count >= unitToKill -> {
-            alert("[red]警告: 建筑过多单位,可能造成服务器卡顿,已禁止生成".with("count" to count))
+            alert("[red]Warning: Building too many units, may cause server lag, have disabled generation".with("count" to count))
             e.unit.kill()
         }
         count >= unitToWarn -> {
-            alert("[yellow]警告: 建筑过多单位,可能造成服务器卡顿,当前: {count}".with("count" to count))
+            alert("[yellow] Warning: Building too many units, may cause server lag, current: {count}".with("count" to count))
         }
     }
 }

@@ -4,7 +4,7 @@ import mindustry.ctype.ContentType
 import mindustry.game.Team
 import mindustry.type.UnitType
 
-name = "扩展功能: 召唤单位"
+name = "Extension: Summoning units"
 
 command("spawn", "Summoning units") {
     usage = "[Type ID=listed] [Number=1] [Team ID, default is sharded]"

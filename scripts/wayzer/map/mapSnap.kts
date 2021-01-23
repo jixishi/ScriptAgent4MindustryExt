@@ -83,7 +83,7 @@ onEnable {
     if (net.server())
         MapRenderer.drawAll(world)
 }
-registerVar("wayzer.ext.mapSnap._get", "地图快照截图接口", { MapRenderer.img })
+registerVar("wayzer.ext.mapSnap._get", "Map Snapshot Screenshot Interface", { MapRenderer.img })
 
 command("saveSnap", "Save a screenshot of the current server map") {
     type = CommandType.Server

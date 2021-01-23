@@ -18,7 +18,7 @@ sealed class Log(val uid: String, val time: Instant) {
     class Deposit(uid: String, time: Instant, val item: Item, val amount: Int) : Log(uid, time)
 }
 
-val historyLimit by config.key(10, "单格最长日记记录")
+val historyLimit by config.key(10, "Longest diary entry in a single cell")
 lateinit var logs: Array<Array<List<Log>>>
 
 //初始化
@@ -69,15 +69,15 @@ fun Player.showLog(xf: Float, yf: Float) {
     if (x < 0 || x >= world.width()) return
     if (y < 0 || y >= world.height()) return
     val logs = logs[x][y]
-    if (logs.isEmpty()) Call.label(con, "[yellow]位置($x,$y)无记录", 5f, xf, yf)
+    if (logs.isEmpty()) Call.label(con, "[yellow] position($x,$y) no record", 5f, xf, yf)
     else {
         val list = logs.map { log ->
             "[red]{time:HH:mm:ss}[]-[yellow]{info.name}[yellow]({info.shortID})[white]{desc}".with(
                 "time" to Date.from(log.time), "info" to netServer.admins.getInfo(log.uid), "desc" to when (log) {
-                    is Log.Place -> "放置了方块${log.type.name}"
-                    is Log.Break -> "拆除了方块"
-                    is Log.Config -> "修改了属性: ${log.value}"
-                    is Log.Deposit -> "往里面丢了${log.amount}个${log.item.name}"
+                    is Log.Place -> "Placed the square ${log.type.name}"
+                    is Log.Break -> "Removed the cube"
+                    is Log.Config -> "Changed property: ${log.value}"
+                    is Log.Deposit -> "Dropped ${log.amount} and ${log.item.name} into it"
                 }
             )
         }
@@ -93,21 +93,21 @@ fun Player.showLog(xf: Float, yf: Float) {
 
 //查询
 val enabledPlayer = mutableSetOf<String>()
-command("history", "开关查询模式") {
+command("history", "Switching query mode") {
     permission = "wayzer.ext.history"
-    usage = "[core(查询核心)]"
+    usage = "[core(query core)]"
     aliases = listOf("历史")
     body {
         if (arg.getOrElse(0) { "" }.contains("core")) returnReply(
-            "[green]核心破坏周边情况:\n{list:\n}".with("list" to lastCoreLog)
+            "[green]Core damage perimeter:\n{list:\n}".with("list" to lastCoreLog)
         )
-        if (player == null) returnReply("[red]控制台仅可查询核心破坏记录".with())
+        if (player == null) returnReply("[red]Console can only query core damage records".with())
         if (player!!.uuid() in enabledPlayer) {
             enabledPlayer.remove(player!!.uuid())
-            reply("[green]关闭查询模式".with())
+            reply("[green] Close query mode".with())
         } else {
             enabledPlayer.add(player!!.uuid())
-            reply("[green]开启查询模式,点击方块查询历史".with())
+            reply("[green] Open query mode, click on the square to query history".with())
         }
     }
 }
@@ -119,7 +119,7 @@ listen<EventType.TapEvent> {
     p.showLog(it.tile.worldx(), it.tile.worldy())
 }
 
-// 自动保留破坏核心的可疑行为
+// Automatic retention of suspicious behavior that damages the core
 var lastCoreLog = emptyList<PlaceHoldString>()
 var lastTime = 0L
 val dangerBlock = arrayOf(
@@ -129,7 +129,7 @@ val dangerBlock = arrayOf(
 )
 listen<EventType.BlockDestroyEvent> { event ->
     if (event.tile.block() is CoreBlock) {
-        if (System.currentTimeMillis() - lastTime > 5000) { //防止核心连环爆炸,仅记录第一个被炸核心
+        if (System.currentTimeMillis() - lastTime > 5000) { //Prevent cores from exploding in succession, record only the first blown core
             val list = mutableListOf<PlaceHoldString>()
             for (x in event.tile.x.let { it - 10..it + 10 })
                 for (y in event.tile.y.let { it - 10..it + 10 })
@@ -138,7 +138,7 @@ listen<EventType.BlockDestroyEvent> { event ->
                             list.add(
                                 "[red]{time:HH:mm:ss}[]-[yellow]{info.name}[yellow]({info.shortID})[white]{desc}".with(
                                     "time" to Date.from(log.time), "info" to netServer.admins.getInfo(log.uid),
-                                    "desc" to "在距离核心({x},{})的位置放置了{type}".with(
+                                    "desc" to "placed {type} at a distance from the core ({x},{})".with(
                                         "x" to (x - event.tile.x), "y" to (y - event.tile.y), "type" to log.type.name
                                     )
                                 )

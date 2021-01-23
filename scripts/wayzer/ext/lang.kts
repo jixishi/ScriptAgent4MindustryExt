@@ -6,10 +6,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.util.*
 
-name = "国际化多语言"
+name = "International Multilingualism"
 
-var default by config.key("default.user", "默认语言")
-var console by config.key("default.console", "控制台语言(不发给玩家的语句)")
+var default by config.key("default.user", "Default Language")
+var console by config.key("default.console", "Console language (statements not sent to the player)")
 
 val tempLang = mutableMapOf<String, String>()//uuid -> lang
 
@@ -69,7 +69,7 @@ class Lang(private val lang: String) : Properties() {
 private val cache = mutableMapOf<String, Lang>()
 fun getLang(lang: String) = cache.getOrPut(lang) { Lang(lang) }
 
-registerVar(TemplateHandlerKey, "多语言处理", TemplateHandler.new {
+registerVar(TemplateHandlerKey, "Multilingual processing", TemplateHandler.new {
     when (val p = getVar("receiver")) {
         null -> getLang(console).trans(it)//console
         is Player -> getLang(p.lang).trans(it)
@@ -106,7 +106,7 @@ commands += CommandInfo(this, "set", "Set the currently used language") {
         else {
             if (player == null) {//console
                 console = arg[0]
-                returnReply("[green]控制台语言已设为 {v}".with("v" to console))
+                returnReply("[green] The console language has been set to {v}".with("v" to console))
             } else {
                 player!!.lang = arg[0]
                 returnReply("[green] Your language is set to {v}".with("v" to player!!.lang))

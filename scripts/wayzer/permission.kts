@@ -3,7 +3,7 @@ package wayzer
 import cf.wayzer.placehold.PlaceHoldApi
 import coreLibrary.lib.event.PermissionRequestEvent
 
-name = "权限管理系统"
+name = "Permission Management System"
 
 var groups by config.key(
     mapOf(
@@ -13,7 +13,7 @@ var groups by config.key(
             "wayzer.maps.host", "wayzer.maps.load", "wayzer.ext.team.change",
         ),
     ),
-    "Permission settings", "特殊组有:@default,@admin,@lvl0,@lvl1等,用户qq可单独做组", "值为权限，@开头为组,支持末尾通配符.*"
+    "Permission settings", "Special groups are:@default,@admin,@lvl0,@lvl1,etc.,userqq can be a separate group", "The value is the permission, the group starts with @, and the end wildcard is supported. *"
 )
 
 fun hasPermission(permission: String, list: List<String>): Boolean {

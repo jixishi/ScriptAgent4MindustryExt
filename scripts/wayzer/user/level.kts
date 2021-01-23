@@ -9,25 +9,25 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-val customWelcome by config.key(true, "是否开启自定义进服信息(中文)")
+val customWelcome by config.key(true, "Whether to open the custom into the service information")
 
 fun getIcon(level: Int): Char {
     if (level <= 0) return (63611).toChar()
     return (63663 - min(level, 12)).toChar()
-    //0级为电池,1-12级为铜墙到合金墙
+    //0 level for the battery, 1-12 level for the copper wall to alloy wall
 }
 
 fun level(exp: Int) = floor(sqrt(max(exp, 0).toDouble()) / 10).toInt()
 fun expByLevel(level: Int) = level * level * 100
 
 registerVarForType<PlayerProfile>().apply {
-    registerChild("level", "当前等级", DynamicVar.obj { level(it.totalExp) })
-    registerChild("levelIcon", "当前等级图标", DynamicVar.obj { getIcon(level(it.totalExp)) })
-    registerChild("nextLevel", "下一级的要求经验值", DynamicVar.obj { expByLevel(level(it.totalExp) + 1) })
+    registerChild("level", "Current Level", DynamicVar.obj { level(it.totalExp) })
+    registerChild("levelIcon", "Current level icon", DynamicVar.obj { getIcon(level(it.totalExp)) })
+    registerChild("nextLevel", "Required experience value for the next level", DynamicVar.obj { expByLevel(level(it.totalExp) + 1) })
 }
 
 /**
- * @return 所有在线用户
+ * @return All online users
  */
 fun updateExp(p: PlayerProfile, dot: Int): List<Player> {
     val players = Groups.player.filter { PlayerData.getOrNull(it.uuid())?.profile == p }

@@ -9,7 +9,7 @@ var lastPos: Vec2 = Vec2.ZERO
 var lastTime: Instant = Instant.MIN
 
 command("gather", "Send a collection request") {
-    usage = "[可选说明]"
+    usage = "[optional description]"
     type = CommandType.Client
     aliases = listOf("集合")
     body {

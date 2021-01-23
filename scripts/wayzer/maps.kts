@@ -15,12 +15,12 @@ import mindustry.maps.Map
 import wayzer.services.MapService
 import java.time.Duration
 
-name = "基础: 地图控制与管理"
+name = "Basics: Map control and management"
 
-val configEnableInternMaps by config.key(false, "是否开启原版内置地图")
-val mapsDistinguishMode by config.key(true, "是否在/maps区分不同模式的地图")
-val configTempSaveSlot by config.key(111, "临时缓存的存档格位")
-val mapsPrePage by config.key(10, "/maps每页显示数")
+val configEnableInternMaps by config.key(false, "Whether to open the original built-in map")
+val mapsDistinguishMode by config.key(true, "Whether to distinguish between different modes of maps in /maps")
+val configTempSaveSlot by config.key(111, "Temporary cache of archive space")
+val mapsPrePage by config.key(10, "/maps display per page")
 
 @Suppress("PropertyName")
 val MapManager = MapManager()
@@ -30,7 +30,7 @@ inner class MapManager : MapService {
         get() {
             Vars.maps.reload()
             if (!configEnableInternMaps && Vars.maps.customMaps().isEmpty) {
-                Log.warn("服务器未安装自定义地图,使用自带地图")
+                Log.warn("The server does not have a custom map installed, use its own map")
                 return Vars.maps.all().toArray(Map::class.java)
             }
             return if (configEnableInternMaps) Vars.maps.all().toArray(Map::class.java) else Vars.maps.customMaps()
@@ -144,7 +144,7 @@ command("maps", "List server map") {
             maps.sortedByDescending { it.second.file.lastModified() }
         else
             maps.filter { mode == null || MapManager.bestMode(it.second) == mode }
-        sendMenuPhone("Server Map [#00bbff] Rotterdam: [red]机[pink]械[purple]师", maps, page, mapsPrePage) { (id, map) ->
+        sendMenuPhone("Server Map [#00bbff] Rotterdam: scripts\wayzer\maps.kts", maps, page, mapsPrePage) { (id, map) ->
             "[pink]{id}[green]({map.width},{map.height})[]:[yellow]{map.fileName}[] | [#00bbff]{map.name}"
                 .with("id" to "%2d".format(id), "map" to map)
         }
@@ -160,8 +160,8 @@ onEnable {
     }
 }
 
-val waitingTime by config.key(Duration.ofSeconds(10)!!, "游戏结束换图的等待时间")
-val gameOverMsgType by config.key(MsgType.InfoMessage, "游戏结束消息是显示方式")
+val waitingTime by config.key(Duration.ofSeconds(10)!!, "Waiting time for the end of the game to change the map")
+val gameOverMsgType by config.key(MsgType.InfoMessage, "Game over messages are displayed in")
 listen<EventType.GameOverEvent> { event ->
     ContentHelper.logToConsole(
         if (state.rules.pvp) "&lcGame over! Team &ly${event.winner.name}&lc is victorious with &ly${Groups.player.size()}&lc players online on map &ly${state.map.name()}&lc."
@@ -180,7 +180,7 @@ listen<EventType.GameOverEvent> { event ->
     launch {
         val now = state.map
         delay(waitingTime.toMillis())
-        if (state.map != now) return@launch//已经通过其他方式换图
+        if (state.map != now) return@launch//Already through other ways to change the map
         MapManager.loadMap(map)
     }
 }
@@ -195,7 +195,7 @@ command("host", "Management Instructions: Change Map") {
             Gamemode.values().find { it.name == name } ?: returnReply("[red]Please enter the correct mode".with())
         } ?: MapManager.bestMode(map)
         MapManager.loadMap(map, mode)
-        broadcast("[green]强制换图为{map.name},模式{map.mode}".with("map" to map, "map.mode" to mode.name))
+        broadcast("[green] force map change to {map.name}, mode {map.mode}".with("map" to map, "map.mode" to mode.name))
     }
 }
 command("load", "Manage commands: Load archive") {

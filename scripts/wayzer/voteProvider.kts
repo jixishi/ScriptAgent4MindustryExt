@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.ceil
 import kotlin.math.max
 
-name = "投票服务"
+name = "Voting Service"
 
 val voteTime by config.key(Duration.ofSeconds(60)!!, "Voting time")
 

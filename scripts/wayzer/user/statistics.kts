@@ -25,11 +25,11 @@ data class StatisticsData(
 ) : Serializable {
     val win get() = state.rules.pvp && pvpTeam == teamWin
 
-    //加权比分
+    //Weighted Score
     val score get() = playedTime - 0.8 * idleTime + 0.6 * buildScore + if (win) 1200 * (1 - idleTime / playedTime) else 0
 
-    //结算经验计算
-    val exp get() = min(ceil(score * 15 / 3600).toInt(), 40)//3600点积分为15,40封顶
+    //Settlement experience calculation
+    val exp get() = min(ceil(score * 15 / 3600).toInt(), 40)//3600 points are capped at 15,40
 
     companion object {
         lateinit var teamWin: Team
@@ -38,12 +38,12 @@ data class StatisticsData(
 
 val Block.buildScore: Float
     get() {
-        //如果有更好的建筑积分规则，请修改此处
-        return buildCost / 60f //建筑时间(单位秒)
+        //If there is a better construction points rule, please modify it here
+        return buildCost / 60f //Construction time (in seconds)
     }
 val Player.isIdle get() = (unit().vel.isZero(1e-9F) || (unit().onSolid() && tileOn()?.block() is Conveyor)) && !unit().isBuilding && !shooting() && textFadeTime < 0
 val Player.active: Boolean
-    get() {//是否挂机超过10秒
+    get() {//Whether to hang for more than 10 seconds
         if (!isIdle) data.lastActive = System.currentTimeMillis()
         return System.currentTimeMillis() - data.lastActive < 10_000
     }
@@ -56,19 +56,19 @@ val statisticsData = mutableMapOf<String, StatisticsData>()
 customLoad(::statisticsData) { statisticsData += it }
 val Player.data get() = statisticsData.getOrPut(uuid()) { StatisticsData() }
 registerVarForType<StatisticsData>().apply {
-    registerChild("playedTime", "本局在线时间", DynamicVar.obj { Duration.ofSeconds(it.playedTime.toLong()) })
-    registerChild("idleTime", "本局在线时间", DynamicVar.obj { Duration.ofSeconds(it.idleTime.toLong()) })
-    registerChild("buildScore", "建筑积分") { _, obj, p ->
+    registerChild("playedTime", "Online time in this bureau", DynamicVar.obj { Duration.ofSeconds(it.playedTime.toLong()) })
+    registerChild("idleTime", "Online time in this bureau", DynamicVar.obj { Duration.ofSeconds(it.idleTime.toLong()) })
+    registerChild("buildScore", "Construction Credits") { _, obj, p ->
         if (!p.isNullOrBlank()) p.format(obj.buildScore)
         else obj.buildScore
     }
-    registerChild("breakBlock", "破坏方块数", DynamicVar.obj { it.breakBlock })
+    registerChild("breakBlock", "Number of destroyed squares", DynamicVar.obj { it.breakBlock })
 }
 registerVarForType<Player>().apply {
-    registerChild("statistics", "游戏统计数据", DynamicVar.obj { it.data })
+    registerChild("statistics", "Game Statistics", DynamicVar.obj { it.data })
 }
 onDisable {
-    PlaceHoldString.bindTypes.remove(StatisticsData::class.java)//局部类，防止泄漏
+    PlaceHoldString.bindTypes.remove(StatisticsData::class.java)//Local class to prevent leakage
 }
 
 listen<EventType.ResetEvent> {
@@ -122,8 +122,8 @@ fun onGameOver(winner: Team) {
             .sortedByDescending { it.second.score }
     val list = sortedData.map { (player, data) ->
         totalTime += data.playedTime - data.idleTime
-        "\n>------<\n[white]{pvpState}{player.name}[white](\n{statistics.playedTime:分钟}\n{statistics.idleTime:分钟}\n{statistics.buildScore:%.1f})".with(
-            "player" to player, "statistics" to data, "pvpState" to if (data.win) "[green][胜][]" else ""
+        "\n>------<\n[white]{pvpState}{player.name}[white](\n{statistics.playedTime:Minutes}\n{statistics.idleTime:Minutes}\n{statistics.buildScore:%.1f})".with(
+            "player" to player, "statistics" to data, "pvpState" to if (data.win) "[green][win][]" else ""
         )
     }
     broadcast("""

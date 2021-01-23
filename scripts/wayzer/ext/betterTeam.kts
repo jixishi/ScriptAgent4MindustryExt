@@ -4,9 +4,9 @@ import mindustry.core.NetServer
 import mindustry.game.Team
 import mindustry.gen.Groups
 
-name = "更好的队伍"
+name = "A better team"
 
-val enableTeamLock by config.key(true, "PVP模式队伍锁定，单局不能更换队伍")
+val enableTeamLock by config.key(true, "PVP mode team lock, single game can not change the team")
 val spectateTeam = Team.all[255]!!
 val backup = netServer.assigner!!
 onDisable {

@@ -9,7 +9,7 @@ import mindustry.world.blocks.storage.CoreBlock
 import java.time.Duration
 import kotlin.math.ceil
 
-val time by config.key(900, "pvp保护时间(单位秒,小于等于0关闭)")
+val time by config.key(900, "pvp protection time (unit seconds, less than or equal to 0 off)")
 
 listen<EventType.WorldLoadEvent> {
     launch(Dispatchers.game) {

@@ -11,8 +11,8 @@ import javax.imageio.ImageIO
 
 //WayZer 版权所有(禁止删除版权声明)
 
-val pixelDir by config.key(dataDirectory.child("pix").file()!!, "像素画原图存放目录")
-val maxSize by config.key(64, "最大像素画大小")
+val pixelDir by config.key(dataDirectory.child("pix").file()!!, "Pixel painting original storage directory")
+val maxSize by config.key(32, "Maximum pixel painting size")
 
 fun handle(file: File, body: (x: Int, y: Int, rgb: Int) -> Unit) {
     var img = ImageIO.read(file)

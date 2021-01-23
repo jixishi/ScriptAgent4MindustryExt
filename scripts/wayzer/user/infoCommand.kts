@@ -11,7 +11,7 @@ val template by config.key(
     | [green]earliest time to enter the service[]:{player.ext.firstJoin:YYYY-MM-dd}
     | {profileInfo}
     | [#2B60DE]=======================================[]
-""".trimMargin(), "个人信息模板"
+""".trimMargin(), "Personal Information Template"
 )
 val profileTemplate by config.key(
     """
@@ -20,7 +20,7 @@ val profileTemplate by config.key(
     | [green]Current level[]:{profile.levelIcon}{profile.level}
     | [green]Current experience (required for next level)[]:{profile.totalExp}({profile.nextLevel})
     | [green]registrationTime[]:{profile.registerTime:YYYY-MM-dd}
-""".trimMargin(), "统一账号信息介绍"
+""".trimMargin(), "Uniform account information introduction"
 )
 
 command("info", "Get current personal information") {
@@ -42,7 +42,7 @@ command("mInfo", "Obtain user information") {
     usage = "[uid]"
     permission = "wayzer.info.other"
     body {
-        if (arg.isEmpty()) returnReply("[red]请输入玩家uuid".with())
+        if (arg.isEmpty()) returnReply("[red]Please enter the player uuid".with())
         val player = netServer.admins.getInfo(arg[0]) ?: returnReply("[red]Player not found".with())
 
         @Suppress("EXPERIMENTAL_API_USAGE")

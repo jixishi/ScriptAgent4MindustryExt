@@ -23,7 +23,7 @@ import kotlin.random.Random
 val voteService by ServiceRegistry<VoteService>()
 val mapService by ServiceRegistry<MapService>()
 
-val enableWebMap by config.key(false, "是否允许网络地图", "来自mdt.wayzer.top")
+val enableWebMap by config.key(false, "Whether to allow web maps", "来自mdt.wayzer.top")
 
 class NetFi(private val url: URL, file: String) : Fi(file) {
     override fun read(): InputStream {
@@ -32,16 +32,16 @@ class NetFi(private val url: URL, file: String) : Fi(file) {
 }
 
 fun VoteService.register() {
-    addSubVote("换图投票", "<地图ID> [网络换图类型参数]", "map", "换图") {
+    addSubVote("Vote for a new picture", "<地图ID> [Network permutation type parameter]", "map", "换图") {
         if (arg.isEmpty())
-            returnReply("[red]请输入地图序号".with())
+            returnReply("[red]Please enter the map serial number".with())
         val maps = mapService.maps
         launch(Dispatchers.game) {
             val map = when {
                 Regex("[0-9a-z]{32}.*").matches(arg[0]) -> {
-                    if (!enableWebMap) return@launch reply("[red]本服未开启网络地图的支持".with())
+                    if (!enableWebMap) return@launch reply("[red]This service does not open the network map support".with())
                     val mode = arg.getOrElse(1) { "Q" }
-                    reply("[green]加载网络地图中".with())
+                    reply("[green] Loading network map in".with())
                     try {
                         withContext(Dispatchers.IO) {
                             @Suppress("BlockingMethodInNonBlockingContext")
@@ -53,7 +53,7 @@ fun VoteService.register() {
                             )
                         }
                     } catch (e: Exception) {
-                        reply("[red]网络地图加载失败,请稍后再试".with())
+                        reply("[red]Network map failed to load, please try again later".with())
                         throw e
                     }
                 }
@@ -71,7 +71,7 @@ fun VoteService.register() {
                     return@start broadcast("[red]Failed to change map,Map[yellow]{nextMap.name}[green](id: {nextMap.id})[red] is corrupted".with("nextMap" to map))
                 depends("wayzer/user/statistics")?.import<(Team) -> Unit>("onGameOver")?.invoke(Team.derelict)
                 mapService.loadMap(map)
-                Core.app.post { // 推后,确保地图成功加载
+                Core.app.post { // Push back and make sure the map loads successfully
                     broadcast("[green] The change of map is successful, current map [yellow]{map.name}[green](id: {map.id})".with())
                 }
             }
@@ -96,13 +96,13 @@ fun VoteService.register() {
     addSubVote("Fast wave (default 10 waves, maximum 50)", "[波数]", "skipWave", "跳波") {
         val lastResetTime by PlaceHold.reference<Instant>("state.startTime")
         val t = min(arg.firstOrNull()?.toIntOrNull() ?: 10, 50)
-        start(player!!, "跳波({t}波)".with("t" to t), supportSingle = true) {
+        start(player!!, "Jumping wave ({t} wave)".with("t" to t), supportSingle = true) {
             launch {
                 val startTime = Instant.now()
                 var waitTime = 3
                 repeat(t) {
-                    while (state.enemies > 300) {//延长等待时间
-                        if (waitTime > 60) return@launch //等待超时
+                    while (state.enemies > 300) {//Extended waiting time
+                        if (waitTime > 60) return@launch //Waiting timeout
                         delay(waitTime * 1000L)
                         waitTime *= 2
                     }

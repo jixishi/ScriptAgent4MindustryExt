@@ -13,9 +13,9 @@ import java.io.File
 import java.net.URL
 import kotlin.system.exitProcess
 
-name = "自动更新"
+name = "Automatic updates"
 
-val enableUpdate by config.key(true, "是否开启自动更新")
+val enableUpdate by config.key(true, "Whether to enable automatic updates")
 
 var updateCallback: (() -> Unit)? = null
 
@@ -36,7 +36,7 @@ onEnable {
                         }
                     }
                 }, { it.printStackTrace() })
-            delay(5 * 60_000)//延时5分钟
+            delay(5 * 60_000)//5 minutes delay time
         }
     }
 }
