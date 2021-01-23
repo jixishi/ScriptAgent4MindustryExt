@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.imageio.ImageIO
 
-//参考 mindustry.graphics.MinimapRenderer
+//Refer mindustry.graphics.MinimapRenderer
 object MapRenderer {
     init {
         loadColors(content)

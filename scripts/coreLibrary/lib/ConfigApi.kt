@@ -3,9 +3,9 @@
 package coreLibrary.lib
 
 /**
- * 配置Api
- * 用于定义脚本的配置项
- * 配置项可在文件中或者使用指令修改
+ * Configuration Api
+ * Configuration items used to define the script
+ * Configuration items can be modified in the file or using the command
  * @sample
  * val welcomeMsg by config.key("Hello Steve","The message show when player join")
  * println(welcomeMsg)

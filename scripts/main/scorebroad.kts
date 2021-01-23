@@ -1,5 +1,5 @@
 package main
-//WayZer 版权所有(请勿删除版权注解)
+//WayZer All Rights Reserved (Please do not remove the copyright notice)
 import arc.util.Align
 import mindustry.gen.Call
 import mindustry.gen.Groups

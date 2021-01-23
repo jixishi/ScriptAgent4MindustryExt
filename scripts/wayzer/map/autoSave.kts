@@ -5,7 +5,7 @@ import mindustry.io.SaveIO
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-name = "Automatic archiving"
+name = "Automatic Save"
 val autoSaveRange = 100 until 106
 command("slots", "List automatically saved archives") {
     body {

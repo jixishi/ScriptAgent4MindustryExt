@@ -93,7 +93,7 @@ fun VoteService.register() {
             state.teams.get(player!!.team()).cores.forEach { Time.run(Random.nextFloat() * 60 * 3, it::kill) }
         }
     }
-    addSubVote("Fast wave (default 10 waves, maximum 50)", "[波数]", "skipWave", "跳波") {
+    addSubVote("Fast wave (default 10 waves, maximum 50)", "[Wave]", "skipWave", "跳波") {
         val lastResetTime by PlaceHold.reference<Instant>("state.startTime")
         val t = min(arg.firstOrNull()?.toIntOrNull() ?: 10, 50)
         start(player!!, "Jumping wave ({t} wave)".with("t" to t), supportSingle = true) {
@@ -113,7 +113,7 @@ fun VoteService.register() {
             }
         }
     }
-    addSubVote("Rollback to an archive (use /slots to view)", "<ArchivingID>", "rollback", "load", "回档") {
+    addSubVote("Rollback to an archive (use /slots to view)", "<SaveID>", "rollback", "load", "回档") {
         if (arg.firstOrNull()?.toIntOrNull() == null)
             returnReply("[red]Please enter the correct archive number".with())
         val map = mapService.getSlot(arg[0].toInt())

@@ -15,9 +15,9 @@ object DataBaseApi {
 }
 
 /**
- * 为模块注册表格
- * 注册时不一定立刻运行
- * 会等[DataBaseApi.db]初始化后统一注册
+ * Registration form for the module
+ * It does not necessarily run immediately when registered
+ * Will wait for [DataBaseApi.db] to be initialized and then register it uniformly
  */
 fun IModuleScript.registerTable(vararg t: Table) {
     registeredTable.addAll(t)

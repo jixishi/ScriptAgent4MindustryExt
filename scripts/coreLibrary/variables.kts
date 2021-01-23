@@ -5,7 +5,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-name = "基础变量注册"
+name = "Basic Variable Registration"
 
 registerVarForType<Instant>().apply {
     registerToString("转换为Date，参数格式同Date") { _, obj, arg ->

@@ -2,8 +2,8 @@ package wayzer.lib.dao
 
 /**
  * @author WayZer
- * 自制数据库Entity类,支持在非transaction修改entity属性,最终通过save保存(不依赖exposed-dao.jar)
- * 未来将移动到coreLib中
+ * Self-made database Entity class, support in non-transaction modified entity properties, and finally saved by save (not dependent on exposed-dao.jar)
+ * will be moved to coreLib in the future
  */
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable

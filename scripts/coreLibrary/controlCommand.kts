@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 val thisRef = this
 onEnable {
     Commands.controlCommand.run {
-        addSub(CommandInfo(thisRef, "list", "列出所有模块或模块内所有脚本") {
+        addSub(CommandInfo(thisRef, "list", "List all modules or all scripts within a module") {
             usage = "[module]"
             permission = "scriptAgent.control.list"
             onComplete {
@@ -27,13 +27,13 @@ onEnable {
                     }
                     return@body reply(
                         """
-                    [yellow]==== [light_yellow]已加载模块[yellow] ====
+                    [yellow]==== [light_yellow]loaded modules[yellow] ====
                     {list:${"\n"}}
                 """.trimIndent().with("list" to list)
                     )
                 }
                 val module = arg[0].let(ScriptManager::getScript)?.let { it as? IModuleScript }
-                    ?: return@body reply("[red]找不到模块".with())
+                    ?: return@body reply("[red]Module not found".with())
                 val list = module.children.map {
                     val enable = if (it.enabled) "purple" else "reset"
                     "[{enable}]{name} [blue]{desc}".with(
@@ -44,13 +44,13 @@ onEnable {
                 }
                 reply(
                     """
-                [yellow]==== [light_yellow]{module}脚本[yellow] ====
+                [yellow]==== [light_yellow]{module} script [yellow] ====
                 {list:${"\n"}}
             """.trimIndent().with("module" to module.name, "list" to list)
                 )
             }
         })
-        addSub(CommandInfo(thisRef, "reload", "重载一个脚本或者模块") {
+        addSub(CommandInfo(thisRef, "reload", "Reload a script or module") {
             usage = "<module[/script]>"
             permission = "scriptAgent.control.reload"
             onComplete {
@@ -62,7 +62,7 @@ onEnable {
             body {
                 if (arg.isEmpty()) replyUsage()
                 GlobalScope.launch {
-                    reply("[yellow]异步处理中".with())
+                    reply("[yellow] Asynchronous processing in progress".with())
                     val success: Boolean = when (val script = arg.getOrNull(0)?.let(ScriptManager::getScript)) {
                         is IModuleScript -> ScriptManager.loadModule(
                             script.sourceFile,
@@ -74,13 +74,13 @@ onEnable {
                             force = true,
                             enable = true
                         ) != null
-                        else -> return@launch reply("[red]找不到模块或者脚本".with())
+                        else -> return@launch reply("[red]No module or script found".with())
                     }
-                    reply((if (success) "[green]重载成功" else "[red]加载失败").with())
+                    reply((if (success) "[green]reload success" else "[red]Loading failed").with())
                 }
             }
         })
-        addSub(CommandInfo(thisRef, "disable", "关闭一个脚本或者模块") {
+        addSub(CommandInfo(thisRef, "disable", "Close a script or module") {
             usage = "<module[/script]>"
             permission = "scriptAgent.control.disable"
             onComplete {
@@ -92,25 +92,25 @@ onEnable {
             body {
                 if (arg.isEmpty()) replyUsage()
                 GlobalScope.launch {
-                    reply("[yellow]异步处理中".with())
+                    reply("[yellow] Asynchronous processing in progress".with())
                     when (val script = arg.getOrNull(0)?.let(ScriptManager::getScript)) {
                         is IModuleScript -> ModuleDisableEvent(script).emit()
                         is ISubScript -> ScriptDisableEvent(script).emit()
-                        else -> return@launch reply("[red]找不到模块或者脚本".with())
+                        else -> return@launch reply("[red]No module or script found".with())
                     }
-                    reply("[green]关闭脚本成功".with())
+                    reply("[green] Close script successful".with())
                 }
             }
         })
-        addSub(CommandInfo(thisRef, "loadScript", "加载一个新脚本或者模块") {
+        addSub(CommandInfo(thisRef, "loadScript", "Load a new script or module") {
             usage = "<filePath>"
             aliases = listOf("load")
             permission = "scriptAgent.control.load"
             body {
                 val file = arg.getOrNull(0)?.let(Config.rootDir::resolve)
-                    ?: return@body reply("[red]未找到对应文件".with())
+                    ?: return@body reply("[red]No corresponding file found".with())
                 GlobalScope.launch {
-                    reply("[yellow]异步处理中".with())
+                    reply("[yellow] Asynchronous processing in progress".with())
                     val success: Boolean = when {
                         file.name.endsWith(Config.moduleDefineSuffix) -> ScriptManager.loadModule(
                             file,
@@ -118,12 +118,12 @@ onEnable {
                         ) != null
                         file.name.endsWith(Config.contentScriptSuffix) -> {
                             val module = ScriptManager.getScript(arg[0].split('/')[0])
-                            if (module !is IModuleScript) return@launch reply("[red]找不到模块,请确定模块已先加载".with())
+                            if (module !is IModuleScript) return@launch reply("[red]Module not found, please make sure the module has been loaded first".with())
                             ScriptManager.loadContent(module, file, enable = true) != null
                         }
-                        else -> return@launch reply("[red]不支持的文件格式".with())
+                        else -> return@launch reply("[red]Unsupported file format".with())
                     }
-                    reply((if (success) "[green]加载脚本成功" else "[red]加载失败,查看后台以了解详情").with())
+                    reply((if (success) "[green]Loading script successfully" else "[red]Loading failed, check backend for details").with())
                 }
             }
         })

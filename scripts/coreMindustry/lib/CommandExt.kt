@@ -28,6 +28,6 @@ fun ISubScript.command(name: String, description: String, init: CommandInfo.() -
 
 //常见拼写错误，但不报错
 @Suppress("unused")
-@Deprecated("请检查变量是否使用正确, Vars.player 为null", ReplaceWith("error(\"服务器中不允许使用该变量\")"), DeprecationLevel.ERROR)
+@Deprecated("Please check if the variables are used correctly, Vars.player is null", ReplaceWith("error(\"This variable is not allowed in the server\")"), DeprecationLevel.ERROR)
 val ISubScript.player: Player?
-    get() = error("服务器中不允许使用该变量")
+    get() = error("This variable is not allowed in the server")

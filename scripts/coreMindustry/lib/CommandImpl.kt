@@ -87,12 +87,12 @@ object RootCommands : Commands() {
     }
 
     override fun onHelp(context: CommandContext, explicit: Boolean) {
-        if (!explicit) return context.reply("[red]无效指令,请使用/help查询".with())
+        if (!explicit) return context.reply("[red]Invalid command, please use /help to query".with())
         assert(overwrite)
         val showDetail = context.arg.firstOrNull() == "-v"
         val page = context.arg.lastOrNull()?.toIntOrNull()
 
-        context.sendMenuPhone("帮助", getSubCommands(context).values.toSet().filter {
+        context.sendMenuPhone("help", getSubCommands(context).values.toSet().filter {
             (it.permission.isBlank() || context.hasPermission(it.permission))
         }, page, 10) {
             context.helpInfo(it, showDetail)

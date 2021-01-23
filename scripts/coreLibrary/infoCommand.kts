@@ -6,7 +6,7 @@ import coreLibrary.lib.PlaceHold.registeredVars
 val thisRef = this
 onEnable {
     Commands.controlCommand.run {
-        addSub(CommandInfo(thisRef, "info", "获取一个脚本的具体信息") {
+        addSub(CommandInfo(thisRef, "info", "Get specific information about a script") {
             usage = "<module[/script]>"
             permission = "scriptAgent.info"
             onComplete {
@@ -17,7 +17,7 @@ onEnable {
             }
             body {
                 if (arg.isEmpty()) replyUsage()
-                val script = ScriptManager.getScript(arg[0]) ?: returnReply("[red]找不到脚本,请确定加载成功,并输入正确".with())
+                val script = ScriptManager.getScript(arg[0]) ?: returnReply("[red]Script not found, please make sure it is loaded successfully and entered correctly".with())
 
                 val configs = script.configs.map {
                     "[purple]{key} [blue]{desc}\n".with("key" to it.path, "desc" to (it.desc.firstOrNull() ?: ""))
@@ -28,12 +28,12 @@ onEnable {
 
                 returnReply(
                     """
-                [yellow]==== [light_yellow]{name}信息[yellow] ====
-                [cyan]配置项:
+                [yellow]==== [light_yellow]{name} info[yellow] ====
+                [cyan] Configuration entry:
                 {configs}
-                [cyan]提供的变量:
+                [cyan] supplied variables:
                 {registeredVars}
-                [cyan]注册的指令:暂未实现
+                [cyan]Registered directives: not implemented yet
             """.trimIndent().with("name" to script.clsName, "configs" to configs, "registeredVars" to registeredVars)
                 )
             }

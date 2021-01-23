@@ -8,9 +8,9 @@
 @file:MavenDepends("org.jetbrains.exposed:exposed-jdbc:0.24.1", single = false)
 @file:MavenDepends("com.h2database:h2:1.4.200", single = false)
 
-name = "ScriptAgent 库模块"
+name = "ScriptAgent"
 /*
-本模块实现一些平台无关的库
+This module implements some platform-independent libraries
  */
 
 addLibraryByClass("org.jetbrains.exposed.sql.Database")

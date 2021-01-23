@@ -5,7 +5,7 @@ import cf.wayzer.placehold.PlaceHoldApi.with
 val thisRef = this
 onEnable {
     Commands.controlCommand.run {
-        addSub(CommandInfo(thisRef, "config", "查看或修改配置") {
+        addSub(CommandInfo(thisRef, "config", "View or modify configuration") {
             usage = "[help/arg...]"
             permission = "scriptAgent.config"
             onComplete {
@@ -15,43 +15,43 @@ onEnable {
             body {
                 if (arg.isEmpty() || arg[0].equals("help", true))
                     returnReply("""
-                        [yellow]可用操作
-                        [purple]config reload [light_purple]重载配置文件
-                        [purple]config <配置项> [light_purple]查看配置项介绍及当前值
-                        [purple]config <配置项> set <value> [light_purple]设置配置值
-                        [purple]config <配置项> write [light_purple]写入默认值到配置文件
-                        [purple]config <配置项> reset [light_purple]恢复默认值（从配置文件移除默认值）
+                        [yellow]available operations
+                        [purple]config reload [light_purple]reload configuration file
+                        [purple]config <config item> [light_purple]View configuration item description and current value
+                        [purple]config <configuration> set <value> [light_purple]set configuration value
+                        [purple]config <config> write [light_purple]Write default values to the configuration file
+                        [purple]config <config> reset [light_purple] restore defaults (remove defaults from config file)
                     """.trimIndent().with())
                 if (arg[0].equals("reload", true)) {
                     ConfigBuilder.reloadFile()
-                    returnReply("[green]重载成功".with())
+                    returnReply("[green]reload success".with())
                 }
-                val config = arg.firstOrNull()?.let { ConfigBuilder.all[it] } ?: returnReply("[red]找不到配置项".with())
+                val config = arg.firstOrNull()?.let { ConfigBuilder.all[it] } ?: returnReply("[red]Configuration items not found".with())
                 when (arg.getOrNull(1)?.toLowerCase()) {
                     null -> {
                         returnReply("""
-                        [yellow]==== [light_yellow]配置项: {name}[yellow] ====
+                        [yellow]==== [light_yellow] Configuration entry: {name}[yellow] ====
                         {desc}
-                        [cyan]当前值: [yellow]{value}
-                        [yellow]使用/sa config help查看可用操作
+                        [cyan] Current value: [yellow]{value}
+                        [yellow]Use /sa config help to see the available actions
                     """.trimIndent().with("name" to config.path, "desc" to config.desc.map { "[purple]$it\n" },
                                 "value" to config.getString()))
                     }
                     "reset" -> {
                         config.reset()
-                        returnReply("[green]重置成功,当前:[yellow]{value}".with("value" to config.getString()))
+                        returnReply("[green] Reset successful, current:[yellow]{value}".with("value" to config.getString()))
                     }
                     "write" -> {
                         config.writeDefault()
-                        reply("[green]写入文件成功成功".with())
+                        reply("[green]Write file successfully".with())
                     }
                     "set" -> {
-                        if (arg.size <= 2) returnReply("[red]请输入值".with())
+                        if (arg.size <= 2) returnReply("[red]Please enter the value".with())
                         val value = arg.subList(2, arg.size).joinToString(" ")
-                        returnReply("[green]设置成功,当前:[yellow]{value}".with("value" to config.setString(value)))
+                        returnReply("[green] set successful, current:[yellow]{value}".with("value" to config.setString(value)))
                     }
                     else -> {
-                        returnReply("[red]未知操作，请查阅help帮助".with())
+                        returnReply("[red]Unknown operation, please check help help".with())
                     }
                 }
             }

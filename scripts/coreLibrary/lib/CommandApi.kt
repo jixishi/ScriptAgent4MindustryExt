@@ -96,20 +96,20 @@ class CommandInfo(
             body.invoke(context)
         } catch (e: Return) {
         } catch (e: Exception) {
-            context.reply("[red]执行命令出现异常: {msg}".with("msg" to (e.message ?: "")))
+            context.reply("[red]An exception occurred in the execution of the command: {msg}".with("msg" to (e.message ?: "")))
             e.printStackTrace()
         }
     }
 
     @CommandBuilder
     fun CommandContext.replyNoPermission(): Nothing {
-        reply("[red]你没有执行该命令的权限".with())
+        reply("[red]You do not have permission to execute this command".with())
         Return()
     }
 
     @CommandBuilder
     fun CommandContext.replyUsage(): Nothing {
-        reply("[red]参数错误: {prefix} {usage}".with("prefix" to prefix, "usage" to (usage)))
+        reply("[red]Parameter error: {prefix} {usage}".with("prefix" to prefix, "usage" to (usage)))
         Return()
     }
 
@@ -202,7 +202,7 @@ open class Commands : (CommandContext) -> Unit, TabCompleter {
     }
 
     init {
-        addSub(CommandInfo(null, "help", "帮助指令") {
+        addSub(CommandInfo(null, "help", "Help command") {
             usage = "[-v] [page]"
             aliases = listOf("帮助")
             body {
@@ -218,7 +218,7 @@ open class Commands : (CommandContext) -> Unit, TabCompleter {
 
         init {
             rootProvider.every {
-                it += CommandInfo(null, "ScriptAgent", "ScriptAgent 控制指令") {
+                it += CommandInfo(null, "ScriptAgent", "ScriptAgent Control commands") {
                     aliases = listOf("sa")
                     permission = "scriptAgent.admin"
                     body(controlCommand)

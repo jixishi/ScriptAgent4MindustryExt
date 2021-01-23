@@ -3,9 +3,9 @@
 package coreLibrary.lib
 
 /**
- * 可用做解析带变量的字符串
- * 也可用于脚本间共享数据或者接口
- * 暴露数据或接口时,注意类型所在的生命周期
+ * Can be used to parse strings with variables
+ * Can also be used to share data or interfaces between scripts
+ * When exposing data or interfaces, pay attention to the life cycle of the type
  */
 
 import cf.wayzer.placehold.DynamicVar

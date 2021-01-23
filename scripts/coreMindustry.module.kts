@@ -4,7 +4,7 @@ import arc.Core
 import coreMindustry.lib.*
 import mindustry.Vars
 
-name = "Mindustry 核心脚本模块"
+name = "Mindustry Core Script Module"
 
 addLibraryByClass("mindustry.Vars")
 addDefaultImport("arc.Core")
@@ -34,13 +34,13 @@ Listener//ensure init
 
 onEnable {
     Vars.dataDirectory.child("scriptsConfig.conf").file().takeIf { it.exists() }?.apply {
-        println("检测到旧配置文件,自动迁移")
+        println("Detect old configuration files and migrate them automatically")
         copyTo(Config.dataDirectory.resolve("config.conf"), true)
         ConfigBuilder.reloadFile()
         delete()
     }
     Vars.dataDirectory.child("scriptAgent.db").file().takeIf { it.exists() }?.let {
-        println("检测到旧数据储存文件,已弃用，请手动移除 $it")
+        println("Old data storage files are detected and discarded, please remove them manually $it")
     }
     Commands.rootProvider.set(RootCommands)
     updateOriginCommandHandler(

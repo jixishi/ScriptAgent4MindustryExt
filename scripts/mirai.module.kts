@@ -17,16 +17,16 @@ addDefaultImport("net.mamoe.mirai.message.data.*")
 addDefaultImport("net.mamoe.mirai.contact.*")
 generateHelper()
 
-val enable by config.key(false, "是否启动机器人(开启前先设置账号密码)")
-val qq by config.key(1849301538L, "机器人qq号")
-val password by config.key("123456", "机器人qq密码")
-val qqProtocol by config.key(BotConfiguration.MiraiProtocol.ANDROID_PAD, "QQ登录类型，不同的类型可同时登录", "可用值: ANDROID_PHONE ANDROID_PAD ANDROID_WATCH")
+val enable by config.key(false, "Whether to start the robot (set the account password before opening)")
+val qq by config.key(13456789L, "Robot qq number")
+val password by config.key("123456", "Robot qq password")
+val qqProtocol by config.key(BotConfiguration.MiraiProtocol.ANDROID_PAD, "QQ login type, different types can login at the same time", "Available values: ANDROID_PHONE ANDROID_PAD ANDROID_WATCH")
 
 val channel = Channel<String>()
 
 onEnable {
     if (!enable) {
-        println("机器人未开启,请先修改配置文件")
+        println("Robot is not open, please modify the configuration file first")
         return@onEnable
     }
     MiraiLogger.setDefaultLoggerCreator {
@@ -60,7 +60,7 @@ onEnable {
 }
 
 Commands.controlCommand.let {
-    it += CommandInfo(this, "mirai", "重定向输入到mirai") {
+    it += CommandInfo(this, "mirai", "Redirect input to mirai") {
         usage = "[args...]"
         permission = "mirai.input"
         body {

@@ -23,20 +23,20 @@ fun enableWatch() {
                 if (event.count() != 1) return@forEach
                 val file = (key.watchable() as Path).resolve(event.context() as? Path ?: return@forEach)
                 when {
-                    file.toString().endsWith(Config.moduleDefineSuffix) ->{ //处理模块重载
-                        println("模板文件更新: ${event.kind().name()} ${Config.getIdByFile(file.toFile())}")
+                    file.toString().endsWith(Config.moduleDefineSuffix) ->{ //Handling module reloading
+                        println("Template file updates: ${event.kind().name()} ${Config.getIdByFile(file.toFile())}")
                         delay(1000)
                         ScriptManager.loadModule(file.toFile(), force = true, enable = true)
                     }
-                    file.toString().endsWith(Config.contentScriptSuffix) -> { //处理子脚本重载
-                        println("脚本文件更新: ${event.kind().name()} ${Config.getIdByFile(file.toFile())}")
+                    file.toString().endsWith(Config.contentScriptSuffix) -> { //Handling subscript overloads
+                        println("Script file update: ${event.kind().name()} ${Config.getIdByFile(file.toFile())}")
                         delay(1000)
                         val module = Config.findModuleBySource(file.toFile())?.let {
                             ScriptManager.getScript(it) as? IModuleScript
                         } ?: return@forEach println("[WARN]Can't get Module by $file")
                         ScriptManager.loadContent(module, file.toFile(), force = true, enable = true)
                     }
-                    file.toFile().isDirectory -> {//添加子目录到Watch
+                    file.toFile().isDirectory -> {//Add subdirectories to Watch
                         file.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY)
                     }
                 }
@@ -47,16 +47,16 @@ fun enableWatch() {
 }
 
 onEnable{
-    Commands.controlCommand += CommandInfo(this, "hotReload", "开关脚本自动热重载") {
+    Commands.controlCommand += CommandInfo(this, "hotReload", "Switch script automatic thermal reload") {
         permission = "scriptAgent.control.hotReload"
         body {
             if (watcher == null) {
                 enableWatch()
-                reply("[green]脚本自动热重载监测启动".with())
+                reply("[green] script automatic hot reload monitoring start".with())
             } else {
                 watcher?.close()
                 watcher = null
-                reply("[yellow]脚本自动热重载监测关闭".with())
+                reply("[yellow] Script automatic hot reload monitoring off".with())
             }
         }
     }

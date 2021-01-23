@@ -1,4 +1,4 @@
-//1. 不同数据库的驱动Maven,根据选择注释
+//1. different database driver Maven, according to the choice of comments
 @file:MavenDepends("com.h2database:h2:1.4.200", single = false)
 //@file:MavenDepends("org.postgresql:postgresql:42.2.15", single = false)
 @file:Suppress("unused")
@@ -9,13 +9,13 @@ import org.jetbrains.exposed.sql.Database
 import java.sql.Connection
 import java.sql.DriverManager
 
-//2. 修改对应类型中需要配置的项(地址，用户名，密码)
+//2. modify the items to be configured in the corresponding type (address, user name, password)
 fun h2(): () -> Connection {
     sourceFile.parentFile.listFiles{_,n->n.startsWith("h2DB.db")}?.takeIf { it.isNotEmpty() }?.forEach {
-        println("检测到旧数据库文件,自动迁移到新目录")
+        println("Detect old database files and automatically migrate them to the new directory")
         val new = Config.dataDirectory.resolve(it.name)
         if(new.exists()){
-            println("目标文件$new 存在,不进行覆盖，请自行处理")
+            println("The target file $new exists, do not overwrite it, please handle it yourself")
         }else {
             it.copyTo(new)
             it.delete()
@@ -28,12 +28,12 @@ fun h2(): () -> Connection {
 
 fun postgre(): () -> Connection {
     Class.forName("org.postgresql.Driver")
-    //使用请修改此处连接方式与账号密码
+    //To use, please change the connection method and account password here
     return {DriverManager.getConnection("jdbc:postgresql://localhost:5432/mindustry","mindustry", "")}
 }
 
 onEnable {
-    //3. 请重新注释此处
+    //3. Please re-comment here
     DataBaseApi.db.set(Database.connect(h2()))
 //    DataBaseApi.db.set(Database.connect(postgre()))
 }
