@@ -67,6 +67,9 @@ A strong script plugin for Mindustry by kts
 - wayzer(Server basic management module, Rewritten from [MyMindustryPlugin](https://github.com/way-zer/MyMindustryPlugin))
 ## Specific functions
 Check out the [Wiki](https://github.com/jixishi/ScriptAgent4MindustryExt-English-Version/wiki)
+## Plugin load server
+![BE6.RUN](https://img.shields.io/badge/TO-BE6.RUN-blue)
+![mdt.wayzer.cf](https://img.shields.io/badge/TO-mdt.wayzer.cf-blue)
 ## copyright
 - Plugin：Reprinting and other uses (including decompiling not for use) are prohibited without permission
 - Script: belongs to the script maker, the reprint of scripts in this repository needs to indicate the link to this page(or this repository)
