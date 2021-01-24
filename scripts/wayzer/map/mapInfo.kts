@@ -11,7 +11,7 @@ fun CoreBlock.CoreBuild.showInfo(p: Player) {
     fun draw(dotY: Float, text: String) = Call.label(p.con, text, 60 * 5f/*5分钟*/, x, y + dotY)
     draw(0f, "[purple]====[white]${world.map.name()}[purple]====")
     draw(-10f, "[purple]By: [scarlet]${world.map.author()}")
-    draw(10f, "[#00bbff]Servant：scripts\wayzer\map\mapInfo.kts")
+    draw(10f, "[#00bbff]Servant：scripts/wayzer/map/mapInfo.kts")
     state.map.description().apply {
         var lastEnd = -1
         var pos = -20f

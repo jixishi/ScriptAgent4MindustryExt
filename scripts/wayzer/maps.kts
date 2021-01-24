@@ -144,7 +144,7 @@ command("maps", "List server map") {
             maps.sortedByDescending { it.second.file.lastModified() }
         else
             maps.filter { mode == null || MapManager.bestMode(it.second) == mode }
-        sendMenuPhone("Server Map [#00bbff] Rotterdam: scripts\wayzer\maps.kts", maps, page, mapsPrePage) { (id, map) ->
+        sendMenuPhone("Server Map [#00bbff] Rotterdam: scripts/wayzer/maps.kts", maps, page, mapsPrePage) { (id, map) ->
             "[pink]{id}[green]({map.width},{map.height})[]:[yellow]{map.fileName}[] | [#00bbff]{map.name}"
                 .with("id" to "%2d".format(id), "map" to map)
         }
