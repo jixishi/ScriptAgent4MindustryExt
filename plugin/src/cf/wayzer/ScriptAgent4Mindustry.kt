@@ -38,10 +38,11 @@ class ScriptAgent4Mindustry: Plugin() {
         Log.info("&y===========================")
         Log.info("&lm&fb     ScriptAgent          ")
         Log.info("&b           By &cWayZer    ")
-        Log.info("&b插件官网: http://git.io/SA4Mindustry")
+        Log.info("&bPlugin Chinese Official Website: http://git.io/SA4Mindustry")
+        Log.info("&bPlugin English Official Website: https://git.io/JtZ6t")
         Log.info("&bQQ交流群: 1033116078")
         if (dir.listFiles()?.isEmpty() != false)
-            Log.warn("未在config/scripts下发现脚本,请下载安装脚本包,以发挥本插件功能")
+            Log.warn("The script is not found under config/scripts, please download and install the script package to make use of the plugin's functions.")
         Log.info("&y===========================")
     }
 }
